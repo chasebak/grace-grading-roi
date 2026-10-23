@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "grace-grading-roi"
+version = "0.1.0"
+description = "Should you grade this card? NPV-per-dollar ranking with partial-pooled gem rates, data-quality gates, and a Pareto frontier."
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Chase Baker", email = "chasebak@usc.edu" }]
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.2",
+    "matplotlib>=3.8",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.5"]
+
+[tool.setuptools.packages.find]
+include = ["grace*"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "SIM", "RUF"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
