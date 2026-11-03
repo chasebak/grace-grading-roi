@@ -2,8 +2,8 @@
 
 Should you grade this card? NPV-per-dollar ranking with partial-pooled gem rates, data-quality gates, and a Pareto frontier — with the gates tested as a classifier.
 
-[![CI](../../actions/workflows/ci.yml/badge.svg)](../../actions/workflows/ci.yml)
-![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)
+[![CI](https://github.com/chasebak/grace-grading-roi/actions/workflows/ci.yml/badge.svg)](https://github.com/chasebak/grace-grading-roi/actions/workflows/ci.yml)
+![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ![Grade-or-not Pareto frontier on synthetic data](figures/frontier.png)

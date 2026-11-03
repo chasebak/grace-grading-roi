@@ -9,7 +9,7 @@ description = "Should you grade this card? NPV-per-dollar ranking with partial-p
 readme = "README.md"
 license = { text = "MIT" }
 authors = [{ name = "Chase Baker", email = "chasebak@usc.edu" }]
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "numpy>=1.26",
     "pandas>=2.2",
