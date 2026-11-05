@@ -1,0 +1,1419 @@
+{
+ "assumptions": [
+  {
+   "if_wrong": "Every capital figure moves with the fee; the effect on rule order is to measure.",
+   "knob": "Regular tier fee and turnaround",
+   "source": "published default (PSA public fee schedule; rough public turnaround)",
+   "value": "$79.99, 1.2 months"
+  },
+  {
+   "if_wrong": "Each extra month discounts proceeds by about the monthly rate.",
+   "knob": "Time to sell after grading",
+   "source": "illustrative",
+   "value": "1.5 months"
+  },
+  {
+   "if_wrong": "Higher rates shrink every NPV and favor faster tiers.",
+   "knob": "Annual discount rate",
+   "source": "illustrative",
+   "value": "0.12"
+  },
+  {
+   "if_wrong": "Scales every net sale; cards near the NPV floor flip first.",
+   "knob": "Selling fee and ship/pack",
+   "source": "illustrative",
+   "value": "0.13 of the sale, $5.00 per sale"
+  },
+  {
+   "if_wrong": "Shrinks gem rates harder or softer toward the era prior.",
+   "knob": "Pooling pseudo-count m",
+   "source": "design choice (method of moments measures 17.4-28.8 on this data)",
+   "value": "40"
+  },
+  {
+   "if_wrong": "A +/-0.10 shift barely reorders the ranking (Spearman >= 0.994).",
+   "knob": "Era priors",
+   "source": "illustrative (sensitivity-analyzed, Experiment 2)",
+   "value": "modern 0.45 / mid 0.30 / vintage 0.18"
+  },
+  {
+   "if_wrong": "a = 1 is NPV per dollar; Experiment 4 prices the difference.",
+   "knob": "GRACE capital exponent a",
+   "source": "design choice",
+   "value": "0.5"
+  },
+  {
+   "if_wrong": "Looser gates admit more cards and more planted errors.",
+   "knob": "Rankability gates",
+   "source": "design choice",
+   "value": "NPV >= $25.00, >= 3 graded-10 sales"
+  },
+  {
+   "if_wrong": "Sets how optimistic pop-derived gem rates are; 0 is the null control.",
+   "knob": "Selection boost (generator)",
+   "source": "illustrative",
+   "value": "0.18 * exp(-V10 / 400)"
+  },
+  {
+   "if_wrong": "The V9 leg's weight in true NPV; the truth reuses the generator's value.",
+   "knob": "Nine-share of non-gem copies (generator and truth)",
+   "source": "design choice",
+   "value": "0.6"
+  },
+  {
+   "if_wrong": "Junk picks would score differently, and leakage counts could shift too: fills are charged at true capital, so a junk card's true price changes which cards fit.",
+   "knob": "True price of a junk-feed plant",
+   "source": "design choice",
+   "value": "the base card it replaced"
+  },
+  {
+   "if_wrong": "Illiquid cards would need a time-to-sell model the repo lacks.",
+   "knob": "Backtest universe",
+   "source": "design choice",
+   "value": "liquid cards only (>= 3 graded-10 sales)"
+  },
+  {
+   "if_wrong": "Real batches spread around the expected values shown.",
+   "knob": "Resale noise and time to sell",
+   "source": "design choice",
+   "value": "not modelled"
+  },
+  {
+   "if_wrong": "Charging predicted prices overspends real budgets (DECISIONS.md).",
+   "knob": "Budget fill",
+   "source": "design choice (greedy is not optimal; the oracle measures the gap)",
+   "value": "greedy down each rule's ranking, charged at the price paid"
+  },
+  {
+   "if_wrong": "A larger submission lowers outcome noise; fewer folds widen the fold sd.",
+   "knob": "Experiment 3 outcome and folds",
+   "source": "design choice",
+   "value": "one 20-card submission per card, 5 folds over cards (seeds 3003, 3011)"
+  },
+  {
+   "if_wrong": "Sets what a 0-or-1 prediction costs; only the clipped raw-rate cards move.",
+   "knob": "Log-loss clip",
+   "source": "design choice",
+   "value": "[1e-06, 1 - 1e-06]"
+  },
+  {
+   "if_wrong": "A single shuffle would make the random row noisy.",
+   "knob": "Random rule",
+   "source": "design choice",
+   "value": "mean of 200 seeded shuffles (seed 4004)"
+  }
+ ],
+ "backtest": {
+  "by_budget": {
+   "1000": {
+    "gated_npv": {
+     "budget": 1000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.3307539683,
+     "mean_true_p10": 0.3599417011,
+     "n_picks": 2,
+     "npv_per_budget_dollar": 3.49884319,
+     "npv_per_dollar_spent": 3.735647934,
+     "oracle_value_captured": 0.3670168274,
+     "pick_optimism_dollars": -296.4058354,
+     "pick_optimism_p10": -0.02918773288,
+     "pick_optimism_share": -0.08471538142,
+     "planted_picks": 0,
+     "predicted_npv": 3202.437355,
+     "regret": 6034.352372,
+     "spent": 936.609459,
+     "true_npv": 3498.84319
+    },
+    "gated_npv_per_dollar": {
+     "budget": 1000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.3866165691,
+     "mean_true_p10": 0.355568236,
+     "n_picks": 9,
+     "npv_per_budget_dollar": 9.143005889,
+     "npv_per_dollar_spent": 9.237380714,
+     "oracle_value_captured": 0.9590704218,
+     "pick_optimism_dollars": 67.29659193,
+     "pick_optimism_p10": 0.03104833318,
+     "pick_optimism_share": 0.007360444994,
+     "planted_picks": 0,
+     "predicted_npv": 9210.302481,
+     "regret": 390.1896729,
+     "spent": 989.7833782,
+     "true_npv": 9143.005889
+    },
+    "grace": {
+     "budget": 1000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.3871339459,
+     "mean_true_p10": 0.379920741,
+     "n_picks": 7,
+     "npv_per_budget_dollar": 8.319974864,
+     "npv_per_dollar_spent": 8.321484923,
+     "oracle_value_captured": 0.8727372485,
+     "pick_optimism_dollars": -120.8100428,
+     "pick_optimism_p10": 0.007213204956,
+     "pick_optimism_share": -0.0145204817,
+     "planted_picks": 0,
+     "predicted_npv": 8199.164822,
+     "regret": 1213.220698,
+     "spent": 999.818535,
+     "true_npv": 8319.974864
+    },
+    "heuristic": {
+     "budget": 1000.0,
+     "leakage_capital_share": 1.0,
+     "leakage_share": 1.0,
+     "mean_predicted_p10": 0.3702265897,
+     "mean_true_p10": 0.3451914008,
+     "n_picks": 8,
+     "npv_per_budget_dollar": 2.182256488,
+     "npv_per_dollar_spent": 2.287095322,
+     "oracle_value_captured": 0.2289113313,
+     "pick_optimism_dollars": -46.27291203,
+     "pick_optimism_p10": 0.02503518888,
+     "pick_optimism_share": -0.0212041583,
+     "planted_picks": 8,
+     "predicted_npv": 2135.983576,
+     "regret": 7350.939074,
+     "spent": 954.1607063,
+     "true_npv": 2182.256488
+    },
+    "irr_rule": {
+     "budget": 1000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.3866165691,
+     "mean_true_p10": 0.355568236,
+     "n_picks": 9,
+     "npv_per_budget_dollar": 9.143005889,
+     "npv_per_dollar_spent": 9.237380714,
+     "oracle_value_captured": 0.9590704218,
+     "pick_optimism_dollars": 67.29659193,
+     "pick_optimism_p10": 0.03104833318,
+     "pick_optimism_share": 0.007360444994,
+     "planted_picks": 0,
+     "predicted_npv": 9210.302481,
+     "regret": 390.1896729,
+     "spent": 989.7833782,
+     "true_npv": 9143.005889
+    },
+    "oracle": {
+     "bracket_width": 35.79284194,
+     "budget": 1000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.3183537258,
+     "mean_true_p10": 0.2895390376,
+     "n_picks": 8,
+     "npv_per_budget_dollar": 9.533195562,
+     "npv_per_dollar_spent": 9.690010562,
+     "oracle_value_captured": 1.0,
+     "pick_optimism_dollars": -160.6631242,
+     "pick_optimism_p10": 0.02881468827,
+     "pick_optimism_share": -0.01685301881,
+     "planted_picks": 0,
+     "predicted_npv": 9372.532438,
+     "regret": 0.0,
+     "spent": 983.8168391,
+     "true_npv": 9533.195562,
+     "upper_bound": 9568.988404
+    },
+    "random": {
+     "budget": 1000.0,
+     "leakage_capital_share": 0.1357525648,
+     "leakage_share": 0.1445714286,
+     "mean_predicted_p10": 0.3716680547,
+     "mean_true_p10": 0.3110093466,
+     "n_picks": 7.78,
+     "npv_per_budget_dollar": 0.8546749217,
+     "npv_per_dollar_spent": 0.8849206594,
+     "oracle_value_captured": 0.08965251118,
+     "pick_optimism_dollars": 372.8510211,
+     "pick_optimism_p10": 0.06065870802,
+     "pick_optimism_share": null,
+     "planted_picks": 1.14,
+     "predicted_npv": 1227.525943,
+     "regret": 8678.52064,
+     "spent": 967.2630004,
+     "true_npv": 854.6749217
+    }
+   },
+   "10000": {
+    "gated_npv": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.02487516861,
+     "leakage_share": 0.04255319149,
+     "mean_predicted_p10": 0.3205792295,
+     "mean_true_p10": 0.2933378009,
+     "n_picks": 47,
+     "npv_per_budget_dollar": 3.497518768,
+     "npv_per_dollar_spent": 3.501366681,
+     "oracle_value_captured": 0.8092023828,
+     "pick_optimism_dollars": 363.4539932,
+     "pick_optimism_p10": 0.02724142861,
+     "pick_optimism_share": 0.01039176677,
+     "planted_picks": 2,
+     "predicted_npv": 35338.64168,
+     "regret": 8246.617428,
+     "spent": 9989.010254,
+     "true_npv": 34975.18768
+    },
+    "gated_npv_per_dollar": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.05166557385,
+     "leakage_share": 0.06349206349,
+     "mean_predicted_p10": 0.3476880662,
+     "mean_true_p10": 0.3241272203,
+     "n_picks": 63,
+     "npv_per_budget_dollar": 3.839975618,
+     "npv_per_dollar_spent": 3.863436678,
+     "oracle_value_captured": 0.8884348092,
+     "pick_optimism_dollars": 218.9528912,
+     "pick_optimism_p10": 0.0235608459,
+     "pick_optimism_share": 0.005701934413,
+     "planted_picks": 4,
+     "predicted_npv": 38618.70907,
+     "regret": 4822.048934,
+     "spent": 9939.274116,
+     "true_npv": 38399.75618
+    },
+    "grace": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.03825719205,
+     "leakage_share": 0.05172413793,
+     "mean_predicted_p10": 0.3324283662,
+     "mean_true_p10": 0.308555939,
+     "n_picks": 58,
+     "npv_per_budget_dollar": 3.804491388,
+     "npv_per_dollar_spent": 3.826242134,
+     "oracle_value_captured": 0.8802250111,
+     "pick_optimism_dollars": 295.9921739,
+     "pick_optimism_p10": 0.02387242722,
+     "pick_optimism_share": 0.007780072122,
+     "planted_picks": 3,
+     "predicted_npv": 38340.90606,
+     "regret": 5176.891228,
+     "spent": 9943.153765,
+     "true_npv": 38044.91388
+    },
+    "heuristic": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.489013727,
+     "leakage_share": 0.4888888889,
+     "mean_predicted_p10": 0.3778798409,
+     "mean_true_p10": 0.3274016614,
+     "n_picks": 90,
+     "npv_per_budget_dollar": 2.796276741,
+     "npv_per_dollar_spent": 2.799570122,
+     "oracle_value_captured": 0.6469597311,
+     "pick_optimism_dollars": 16793.57739,
+     "pick_optimism_p10": 0.05047817949,
+     "pick_optimism_share": 0.6005692192,
+     "planted_picks": 44,
+     "predicted_npv": 44756.3448,
+     "regret": 15259.0377,
+     "spent": 9988.236119,
+     "true_npv": 27962.76741
+    },
+    "irr_rule": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.05166557385,
+     "leakage_share": 0.06349206349,
+     "mean_predicted_p10": 0.3476880662,
+     "mean_true_p10": 0.3241272203,
+     "n_picks": 63,
+     "npv_per_budget_dollar": 3.839975618,
+     "npv_per_dollar_spent": 3.863436678,
+     "oracle_value_captured": 0.8884348092,
+     "pick_optimism_dollars": 218.9528912,
+     "pick_optimism_p10": 0.0235608459,
+     "pick_optimism_share": 0.005701934413,
+     "planted_picks": 4,
+     "predicted_npv": 38618.70907,
+     "regret": 4822.048934,
+     "spent": 9939.274116,
+     "true_npv": 38399.75618
+    },
+    "oracle": {
+     "bracket_width": 145.6742605,
+     "budget": 10000.0,
+     "leakage_capital_share": 0.09041055342,
+     "leakage_share": 0.09523809524,
+     "mean_predicted_p10": 0.3459928982,
+     "mean_true_p10": 0.3256849504,
+     "n_picks": 63,
+     "npv_per_budget_dollar": 4.322180511,
+     "npv_per_dollar_spent": 4.335996955,
+     "oracle_value_captured": 1.0,
+     "pick_optimism_dollars": 1030.49792,
+     "pick_optimism_p10": 0.02030794773,
+     "pick_optimism_share": 0.02384208428,
+     "planted_picks": 6,
+     "predicted_npv": 44252.30303,
+     "regret": 0.0,
+     "spent": 9968.135485,
+     "true_npv": 43221.80511,
+     "upper_bound": 43367.47937
+    },
+    "random": {
+     "budget": 10000.0,
+     "leakage_capital_share": 0.1357195055,
+     "leakage_share": 0.1497604376,
+     "mean_predicted_p10": 0.369760092,
+     "mean_true_p10": 0.3069104655,
+     "n_picks": 76.2,
+     "npv_per_budget_dollar": 0.8861828972,
+     "npv_per_dollar_spent": 0.8888878627,
+     "oracle_value_captured": 0.2050314407,
+     "pick_optimism_dollars": 3268.925927,
+     "pick_optimism_p10": 0.06284962648,
+     "pick_optimism_share": 0.4110428272,
+     "planted_picks": 11.42,
+     "predicted_npv": 12130.7549,
+     "regret": 34359.97614,
+     "spent": 9969.426447,
+     "true_npv": 8861.828972
+    }
+   },
+   "3000": {
+    "gated_npv": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.0,
+     "leakage_share": 0.0,
+     "mean_predicted_p10": 0.2972516437,
+     "mean_true_p10": 0.2724839065,
+     "n_picks": 12,
+     "npv_per_budget_dollar": 5.088198588,
+     "npv_per_dollar_spent": 5.088710211,
+     "oracle_value_captured": 0.691289853,
+     "pick_optimism_dollars": 72.16866623,
+     "pick_optimism_p10": 0.02476773725,
+     "pick_optimism_share": 0.004727846538,
+     "planted_picks": 0,
+     "predicted_npv": 15336.76443,
+     "regret": 6816.729022,
+     "spent": 2999.698378,
+     "true_npv": 15264.59576
+    },
+    "gated_npv_per_dollar": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.03980252324,
+     "leakage_share": 0.04166666667,
+     "mean_predicted_p10": 0.3639645285,
+     "mean_true_p10": 0.3164553091,
+     "n_picks": 24,
+     "npv_per_budget_dollar": 6.434211786,
+     "npv_per_dollar_spent": 6.50537622,
+     "oracle_value_captured": 0.8741611088,
+     "pick_optimism_dollars": 714.5767291,
+     "pick_optimism_p10": 0.04750921942,
+     "pick_optimism_share": 0.03701964607,
+     "planted_picks": 1,
+     "predicted_npv": 20017.21209,
+     "regret": 2778.689428,
+     "spent": 2967.182021,
+     "true_npv": 19302.63536
+    },
+    "grace": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.03951481406,
+     "leakage_share": 0.05,
+     "mean_predicted_p10": 0.3469888685,
+     "mean_true_p10": 0.3034960852,
+     "n_picks": 20,
+     "npv_per_budget_dollar": 6.306212401,
+     "npv_per_dollar_spent": 6.329873024,
+     "oracle_value_captured": 0.8567709313,
+     "pick_optimism_dollars": 723.1752807,
+     "pick_optimism_p10": 0.04349278324,
+     "pick_optimism_share": 0.03822554833,
+     "planted_picks": 1,
+     "predicted_npv": 19641.81248,
+     "regret": 3162.687585,
+     "spent": 2988.78621,
+     "true_npv": 18918.6372
+    },
+    "heuristic": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.7850742872,
+     "leakage_share": 0.75,
+     "mean_predicted_p10": 0.3762254268,
+     "mean_true_p10": 0.3206795976,
+     "n_picks": 28,
+     "npv_per_budget_dollar": 2.474649274,
+     "npv_per_dollar_spent": 2.475036998,
+     "oracle_value_captured": 0.3362093486,
+     "pick_optimism_dollars": 5761.02823,
+     "pick_optimism_p10": 0.05554582913,
+     "pick_optimism_share": 0.7760060238,
+     "planted_picks": 21,
+     "predicted_npv": 13184.97605,
+     "regret": 14657.37696,
+     "spent": 2999.530038,
+     "true_npv": 7423.947822
+    },
+    "irr_rule": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.03980252324,
+     "leakage_share": 0.04166666667,
+     "mean_predicted_p10": 0.3639645285,
+     "mean_true_p10": 0.3164553091,
+     "n_picks": 24,
+     "npv_per_budget_dollar": 6.434211786,
+     "npv_per_dollar_spent": 6.50537622,
+     "oracle_value_captured": 0.8741611088,
+     "pick_optimism_dollars": 714.5767291,
+     "pick_optimism_p10": 0.04750921942,
+     "pick_optimism_share": 0.03701964607,
+     "planted_picks": 1,
+     "predicted_npv": 20017.21209,
+     "regret": 2778.689428,
+     "spent": 2967.182021,
+     "true_npv": 19302.63536
+    },
+    "oracle": {
+     "bracket_width": 0.0,
+     "budget": 3000.0,
+     "leakage_capital_share": 0.03938984163,
+     "leakage_share": 0.04545454545,
+     "mean_predicted_p10": 0.3528520337,
+     "mean_true_p10": 0.3177769252,
+     "n_picks": 22,
+     "npv_per_budget_dollar": 7.360441595,
+     "npv_per_dollar_spent": 7.364691629,
+     "oracle_value_captured": 1.0,
+     "pick_optimism_dollars": 549.0196025,
+     "pick_optimism_p10": 0.03507510846,
+     "pick_optimism_share": 0.02486352643,
+     "planted_picks": 1,
+     "predicted_npv": 22630.34439,
+     "regret": 0.0,
+     "spent": 2998.268753,
+     "true_npv": 22081.32479,
+     "upper_bound": 22081.32479
+    },
+    "random": {
+     "budget": 3000.0,
+     "leakage_capital_share": 0.1375442308,
+     "leakage_share": 0.1484539011,
+     "mean_predicted_p10": 0.3660276129,
+     "mean_true_p10": 0.3039134685,
+     "n_picks": 22.715,
+     "npv_per_budget_dollar": 0.8802485874,
+     "npv_per_dollar_spent": 0.8900270615,
+     "oracle_value_captured": 0.1195918174,
+     "pick_optimism_dollars": 987.9058101,
+     "pick_optimism_p10": 0.06211414433,
+     "pick_optimism_share": 1.171124624,
+     "planted_picks": 3.41,
+     "predicted_npv": 3628.651572,
+     "regret": 19440.57902,
+     "spent": 2967.125296,
+     "true_npv": 2640.745762
+    }
+   }
+  },
+  "diagnostics": {
+   "min_regret_vs_greedy_true_npv": -4096.530337,
+   "min_regret_vs_greedy_true_ratio": 28.38104845,
+   "n_budgets": 28,
+   "per_spent_largest_gap": 2.739321141,
+   "per_spent_largest_gap_budget": 250,
+   "per_spent_largest_gap_rule": "grace",
+   "per_spent_rank_flips": 0,
+   "predicted_cost_checked_cells": 140,
+   "predicted_cost_overspend_cells": 20
+  },
+  "random_spread": {
+   "budget": 3000,
+   "max": 2.135107503,
+   "mean": 0.8802485874,
+   "min": 0.0153549865,
+   "n_draws": 200,
+   "sd": 0.4329581341
+  },
+  "settings": {
+   "budgets": [
+    1000,
+    3000,
+    10000
+   ],
+   "headline_budget": 3000,
+   "min_liquidity": 3,
+   "random_draws": 200,
+   "random_seed": 4004,
+   "rule_labels": {
+    "gated_npv": "Gated NPV",
+    "gated_npv_per_dollar": "Gated NPV per dollar",
+    "grace": "GRACE (NPV / sqrt(capital), gated)",
+    "heuristic": "A common multiplier heuristic (V10/raw, no gates)",
+    "irr_rule": "IRR rule",
+    "oracle": "Oracle (exact knapsack)",
+    "random": "Random liquid cards"
+   },
+   "rule_short_labels": {
+    "gated_npv": "Gated NPV",
+    "gated_npv_per_dollar": "Gated NPV per $",
+    "grace": "GRACE",
+    "heuristic": "Heuristic",
+    "irr_rule": "IRR rule",
+    "oracle": "Oracle",
+    "random": "Random"
+   },
+   "sweep_budgets": [
+    250,
+    500,
+    750,
+    1000,
+    1250,
+    1500,
+    1750,
+    2000,
+    2250,
+    2500,
+    2750,
+    3000,
+    3500,
+    4000,
+    4500,
+    5000,
+    5500,
+    6000,
+    7000,
+    8000,
+    9000,
+    10000,
+    11000,
+    12000,
+    14000,
+    16000,
+    18000,
+    20000
+   ],
+   "tier": "regular"
+  },
+  "sweep_facts": {
+   "grace_beats_heuristic": 28,
+   "grace_leakage_below_base_rate": 28,
+   "heuristic_beats_random": 28,
+   "irr_rule_same_picks_as_npv_per_dollar": 28,
+   "max_budget": 20000,
+   "min_budget": 250,
+   "n_budgets": 28,
+   "npv_per_dollar_beats_grace": 24
+  },
+  "tier_check": {
+   "gated_set_equal": true,
+   "n_gated_default": 169,
+   "n_gated_regular": 169,
+   "n_gated_regular_argmax": 169,
+   "n_prediction_differences": 0
+  },
+  "universe": {
+   "n_gated": 169,
+   "n_gated_planted": 13,
+   "n_liquid": 451,
+   "n_planted": 67,
+   "n_true_npv_positive": 222,
+   "planted_base_rate": 0.1485587583,
+   "total_true_capital": 59345.84314
+  }
+ },
+ "demo": {
+  "cards_scored": 600,
+  "dropped": 85,
+  "kept": 515,
+  "on_frontier": 11,
+  "rankable": 169,
+  "repaired_raws": 16
+ },
+ "gates": {
+  "clean_flags_by_kind": {
+   "hot_market": 12,
+   "ratio_tail": 5,
+   "sparse_release": 14
+  },
+  "false_positive_cost": {
+   "clean_dropped": 31,
+   "forgone_npv_total": 9583.677538,
+   "positive_npv_drops": 24
+  },
+  "metrics": {
+   "clean_flagged": 31,
+   "clean_total": 500,
+   "drop_precision": 0.6352941176,
+   "dropped_total": 85,
+   "exempt_grail_survived": 16,
+   "exempt_grail_total": 16,
+   "flag_precision": 0.6930693069,
+   "flagged_total": 101,
+   "grail_survived": 15,
+   "grail_total": 15,
+   "per_pathology": {
+    "bad_raw": {
+     "caught": 21,
+     "planted": 30,
+     "recall": 0.7
+    },
+    "fake_grail": {
+     "caught": 14,
+     "planted": 15,
+     "recall": 0.9333333333
+    },
+    "thin_outlier": {
+     "caught": 12,
+     "planted": 15,
+     "recall": 0.8
+    },
+    "wrong_card": {
+     "caught": 23,
+     "planted": 25,
+     "recall": 0.92
+    }
+   }
+  },
+  "misses": {
+   "bad_raw": [
+    1.6,
+    1.6,
+    1.8,
+    1.9,
+    2.0,
+    2.1,
+    2.4,
+    2.5,
+    2.6
+   ],
+   "fake_grail": [
+    930.651
+   ],
+   "thin_outlier": [
+    171.428,
+    187.936,
+    197.219
+   ],
+   "wrong_card": [
+    2.212080752,
+    2.822918518
+   ]
+  }
+ },
+ "gem_cv": {
+  "empty_ladders": 46,
+  "fold_sizes": [
+   120,
+   120,
+   120,
+   120,
+   120
+  ],
+  "n_cards": 600,
+  "settings": {
+   "clip": 1e-06,
+   "ece_bins": 10,
+   "estimator_labels": {
+    "eb_mom": "Empirical Bayes, m fit by moments",
+    "eb_prior": "Cross arm: m fit by moments, toward the fixed prior",
+    "era_mean": "Era mean (training folds)",
+    "m40_era_mean": "Cross arm: m = 40 toward the era mean",
+    "pooled_m40": "Shipped pooling, m = 40",
+    "prior_fixed": "Fixed era prior",
+    "raw_rate": "Raw rate n10 / n",
+    "true_rate": "True rate (reference, unknowable)"
+   },
+   "estimator_short": {
+    "eb_mom": "empirical Bayes",
+    "eb_prior": "moment m toward the fixed prior",
+    "era_mean": "era mean",
+    "m40_era_mean": "m = 40 toward the era mean",
+    "pooled_m40": "m = 40",
+    "prior_fixed": "fixed prior",
+    "raw_rate": "raw rate",
+    "true_rate": "true rate"
+   },
+   "fold_seed": 3003,
+   "k_folds": 5,
+   "outcome_seed": 3011,
+   "submission_size": 20,
+   "target_labels": {
+    "next_pop": "next pop submissions (observed, selection-boosted rate)",
+    "unscreened": "unscreened raw cards (latent rate)"
+   }
+  },
+  "targets": {
+   "next_pop": {
+    "best_by_log_loss": "eb_mom",
+    "estimators": {
+     "eb_mom": {
+      "brier": {
+       "mean": 0.2148304057,
+       "sd": 0.002808423318
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.001079902716,
+       "sd": 0.0005424062375
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.02370535629,
+       "sd": 0.006129354559
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 4,
+       "mean": -0.009637550379,
+       "sd": 0.008346588129
+      },
+      "log_loss": {
+       "mean": 0.617525117,
+       "sd": 0.006037141774
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.002334022992,
+       "sd": 0.001113357774
+      }
+     },
+     "eb_prior": {
+      "brier": {
+       "mean": 0.2154579045,
+       "sd": 0.003172550145
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.0004524039035,
+       "sd": 0.0002481634522
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.03092431877,
+       "sd": 0.008308524238
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 4,
+       "mean": -0.002418587898,
+       "sd": 0.003533554595
+      },
+      "log_loss": {
+       "mean": 0.6188219593,
+       "sd": 0.006793207159
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.001037180707,
+       "sd": 0.0006041508723
+      }
+     },
+     "era_mean": {
+      "brier": {
+       "mean": 0.220481239,
+       "sd": 0.003609064482
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.004570930656,
+       "sd": 0.0004640689212
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.02378972049,
+       "sd": 0.007541078302
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.009553186177,
+       "sd": 0.004152797651
+      },
+      "log_loss": {
+       "mean": 0.6306718403,
+       "sd": 0.007407266361
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01081270025,
+       "sd": 0.001229107759
+      }
+     },
+     "m40_era_mean": {
+      "brier": {
+       "mean": 0.2151378138,
+       "sd": 0.002775476339
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.0007724945392,
+       "sd": 0.0004876932687
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.02771163537,
+       "sd": 0.004986028954
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 4,
+       "mean": -0.005631271301,
+       "sd": 0.008918366488
+      },
+      "log_loss": {
+       "mean": 0.6183222837,
+       "sd": 0.005826082013
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.001536856278,
+       "sd": 0.001030159945
+      }
+     },
+     "pooled_m40": {
+      "brier": {
+       "mean": 0.2159103084,
+       "sd": 0.003211424331
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.03334290667,
+       "sd": 0.008390950005
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      },
+      "log_loss": {
+       "mean": 0.61985914,
+       "sd": 0.006722117489
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      }
+     },
+     "prior_fixed": {
+      "brier": {
+       "mean": 0.2228291667,
+       "sd": 0.004579232218
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.006918858284,
+       "sd": 0.001540400966
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.05183333333,
+       "sd": 0.007499074017
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01849042666,
+       "sd": 0.002955178134
+      },
+      "log_loss": {
+       "mean": 0.6355254677,
+       "sd": 0.009398479886
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01566632771,
+       "sd": 0.003405822153
+      }
+     },
+     "raw_rate": {
+      "brier": {
+       "mean": 0.2171913908,
+       "sd": 0.002508103763
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.001281082455,
+       "sd": 0.00117631282
+      },
+      "clipped": 7,
+      "ece": {
+       "mean": 0.0271033734,
+       "sd": 0.00589128814
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 4,
+       "mean": -0.006239533268,
+       "sd": 0.00993362064
+      },
+      "log_loss": {
+       "mean": 0.6436496218,
+       "sd": 0.02136382018
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.02379048179,
+       "sd": 0.02411121074
+      }
+     },
+     "true_rate": {
+      "brier": {
+       "mean": 0.2118949647,
+       "sd": 0.00198743849
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.004015343655,
+       "sd": 0.001712057444
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.021694412,
+       "sd": 0.004859384178
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.01164849467,
+       "sd": 0.006699331928
+      },
+      "log_loss": {
+       "mean": 0.6106604316,
+       "sd": 0.00430335645
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.009198708389,
+       "sd": 0.003353032152
+      }
+     }
+    },
+    "log_loss_verdict_vs_m40": {
+     "eb_mom": "better",
+     "eb_prior": "better",
+     "era_mean": "worse",
+     "m40_era_mean": "better",
+     "prior_fixed": "worse",
+     "raw_rate": "null"
+    }
+   },
+   "unscreened": {
+    "best_by_log_loss": "prior_fixed",
+    "estimators": {
+     "eb_mom": {
+      "brier": {
+       "mean": 0.204730974,
+       "sd": 0.003438459775
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.003180462396,
+       "sd": 0.0006357395727
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.08300390229,
+       "sd": 0.009683921076
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01934934959,
+       "sd": 0.002374332174
+      },
+      "log_loss": {
+       "mean": 0.5953236186,
+       "sd": 0.007487543207
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.006734709032,
+       "sd": 0.001290594871
+      }
+     },
+     "eb_prior": {
+      "brier": {
+       "mean": 0.2023230927,
+       "sd": 0.003775763732
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0007725811357,
+       "sd": 0.0004116026821
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.06755886411,
+       "sd": 0.007590292374
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.003904311408,
+       "sd": 0.001595253652
+      },
+      "log_loss": {
+       "mean": 0.5902139854,
+       "sd": 0.008139500971
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.001625075755,
+       "sd": 0.0009489916616
+      }
+     },
+     "era_mean": {
+      "brier": {
+       "mean": 0.2058808938,
+       "sd": 0.003595963003
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.004330382278,
+       "sd": 0.002075238501
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.07834585997,
+       "sd": 0.01471021736
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01469130727,
+       "sd": 0.009247847413
+      },
+      "log_loss": {
+       "mean": 0.5988554996,
+       "sd": 0.007889364023
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01026659001,
+       "sd": 0.004592359463
+      }
+     },
+     "m40_era_mean": {
+      "brier": {
+       "mean": 0.2043242726,
+       "sd": 0.003473472691
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.002773761035,
+       "sd": 0.0007639074078
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.08211303374,
+       "sd": 0.01046284
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.01845848104,
+       "sd": 0.003481159851
+      },
+      "log_loss": {
+       "mean": 0.5946051613,
+       "sd": 0.007560935386
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.006016251695,
+       "sd": 0.001644610085
+      }
+     },
+     "pooled_m40": {
+      "brier": {
+       "mean": 0.2015505116,
+       "sd": 0.003875517471
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.0636545527,
+       "sd": 0.007888147775
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      },
+      "log_loss": {
+       "mean": 0.5885889096,
+       "sd": 0.008362523859
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0,
+       "sd": 0.0
+      }
+     },
+     "prior_fixed": {
+      "brier": {
+       "mean": 0.2011308333,
+       "sd": 0.004305387815
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 3,
+       "mean": -0.0004196782349,
+       "sd": 0.001339700686
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.04091666667,
+       "sd": 0.01203452787
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.02273788604,
+       "sd": 0.005488069087
+      },
+      "log_loss": {
+       "mean": 0.5885086681,
+       "sd": 0.009349907671
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 2,
+       "mean": -8.024146994e-05,
+       "sd": 0.002944583809
+      }
+     },
+     "raw_rate": {
+      "brier": {
+       "mean": 0.2105749186,
+       "sd": 0.004677241109
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.009024406988,
+       "sd": 0.002839504536
+      },
+      "clipped": 7,
+      "ece": {
+       "mean": 0.0921728171,
+       "sd": 0.01211737749
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.0285182644,
+       "sd": 0.007639324155
+      },
+      "log_loss": {
+       "mean": 0.6387865278,
+       "sd": 0.02227090533
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 0,
+       "mean": 0.05019761822,
+       "sd": 0.02709191208
+      }
+     },
+     "true_rate": {
+      "brier": {
+       "mean": 0.1941306626,
+       "sd": 0.005165180214
+      },
+      "brier_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.007419848949,
+       "sd": 0.001512686725
+      },
+      "clipped": 0,
+      "ece": {
+       "mean": 0.012559089,
+       "sd": 0.003093096818
+      },
+      "ece_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.0510954637,
+       "sd": 0.007624685747
+      },
+      "log_loss": {
+       "mean": 0.5705570178,
+       "sd": 0.01227855264
+      },
+      "log_loss_diff_vs_m40": {
+       "folds_better": 5,
+       "mean": -0.01803189184,
+       "sd": 0.004333431763
+      }
+     }
+    },
+    "log_loss_verdict_vs_m40": {
+     "eb_mom": "worse",
+     "eb_prior": "worse",
+     "era_mean": "worse",
+     "m40_era_mean": "worse",
+     "prior_fixed": "null",
+     "raw_rate": "worse"
+    }
+   }
+  },
+  "training_fit_ranges": {
+   "mid": {
+    "m_hat_max": 29.67401617,
+    "m_hat_min": 25.62315693,
+    "mu_hat_max": 0.331574504,
+    "mu_hat_min": 0.3210599444
+   },
+   "modern": {
+    "m_hat_max": 32.0297288,
+    "m_hat_min": 24.78183868,
+    "mu_hat_max": 0.5086678224,
+    "mu_hat_min": 0.4983289786
+   },
+   "vintage": {
+    "m_hat_max": 19.02974295,
+    "m_hat_min": 15.75532094,
+    "mu_hat_max": 0.2097968937,
+    "mu_hat_min": 0.1948613584
+   }
+  }
+ },
+ "generated_by": "python -m grace.report (committed synthetic data, seed 7)",
+ "kpis": {
+  "kpi_gem_cv_log_loss_diff_eb_mom_next_pop": -0.002334022992,
+  "kpi_gem_cv_log_loss_diff_eb_mom_unscreened": 0.006734709032,
+  "kpi_gem_cv_log_loss_diff_eb_prior_next_pop": -0.001037180707,
+  "kpi_gem_cv_log_loss_diff_eb_prior_unscreened": 0.001625075755,
+  "kpi_gem_cv_log_loss_diff_era_mean_next_pop": 0.01081270025,
+  "kpi_gem_cv_log_loss_diff_era_mean_unscreened": 0.01026659001,
+  "kpi_gem_cv_log_loss_diff_m40_era_mean_next_pop": -0.001536856278,
+  "kpi_gem_cv_log_loss_diff_m40_era_mean_unscreened": 0.006016251695,
+  "kpi_gem_cv_log_loss_diff_prior_fixed_next_pop": 0.01566632771,
+  "kpi_gem_cv_log_loss_diff_prior_fixed_unscreened": -8.024146994e-05,
+  "kpi_gem_cv_log_loss_diff_raw_rate_next_pop": 0.02379048179,
+  "kpi_gem_cv_log_loss_diff_raw_rate_unscreened": 0.05019761822,
+  "kpi_leakage_capital_share_gated_npv_3000": 0.0,
+  "kpi_leakage_capital_share_gated_npv_per_dollar_3000": 0.03980252324,
+  "kpi_leakage_capital_share_grace_3000": 0.03951481406,
+  "kpi_leakage_capital_share_heuristic_3000": 0.7850742872,
+  "kpi_leakage_capital_share_irr_rule_3000": 0.03980252324,
+  "kpi_leakage_capital_share_oracle_3000": 0.03938984163,
+  "kpi_leakage_capital_share_random_3000": 0.1375442308,
+  "kpi_leakage_share_gated_npv_3000": 0.0,
+  "kpi_leakage_share_gated_npv_per_dollar_3000": 0.04166666667,
+  "kpi_leakage_share_grace_3000": 0.05,
+  "kpi_leakage_share_heuristic_3000": 0.75,
+  "kpi_leakage_share_irr_rule_3000": 0.04166666667,
+  "kpi_leakage_share_oracle_3000": 0.04545454545,
+  "kpi_leakage_share_random_3000": 0.1484539011,
+  "kpi_liquid_universe_cards": 451,
+  "kpi_liquid_universe_planted": 67,
+  "kpi_liquid_universe_planted_base_rate": 0.1485587583,
+  "kpi_n_picks_gated_npv_3000": 12,
+  "kpi_n_picks_gated_npv_per_dollar_3000": 24,
+  "kpi_n_picks_grace_3000": 20,
+  "kpi_n_picks_heuristic_3000": 28,
+  "kpi_n_picks_irr_rule_3000": 24,
+  "kpi_n_picks_oracle_3000": 22,
+  "kpi_n_picks_random_3000": 22.715,
+  "kpi_npv_per_budget_dollar_gated_npv_3000": 5.088198588,
+  "kpi_npv_per_budget_dollar_gated_npv_per_dollar_3000": 6.434211786,
+  "kpi_npv_per_budget_dollar_grace_3000": 6.306212401,
+  "kpi_npv_per_budget_dollar_heuristic_3000": 2.474649274,
+  "kpi_npv_per_budget_dollar_irr_rule_3000": 6.434211786,
+  "kpi_npv_per_budget_dollar_oracle_3000": 7.360441595,
+  "kpi_npv_per_budget_dollar_random_3000": 0.8802485874,
+  "kpi_oracle_value_captured_gated_npv_3000": 0.691289853,
+  "kpi_oracle_value_captured_gated_npv_per_dollar_3000": 0.8741611088,
+  "kpi_oracle_value_captured_grace_3000": 0.8567709313,
+  "kpi_oracle_value_captured_heuristic_3000": 0.3362093486,
+  "kpi_oracle_value_captured_irr_rule_3000": 0.8741611088,
+  "kpi_oracle_value_captured_oracle_3000": 1.0,
+  "kpi_oracle_value_captured_random_3000": 0.1195918174,
+  "kpi_pick_optimism_p10_gated_npv_3000": 0.02476773725,
+  "kpi_pick_optimism_p10_gated_npv_per_dollar_3000": 0.04750921942,
+  "kpi_pick_optimism_p10_grace_3000": 0.04349278324,
+  "kpi_pick_optimism_p10_heuristic_3000": 0.05554582913,
+  "kpi_pick_optimism_p10_irr_rule_3000": 0.04750921942,
+  "kpi_pick_optimism_p10_oracle_3000": 0.03507510846,
+  "kpi_pick_optimism_p10_random_3000": 0.06211414433,
+  "kpi_pick_optimism_share_gated_npv_3000": 0.004727846538,
+  "kpi_pick_optimism_share_gated_npv_per_dollar_3000": 0.03701964607,
+  "kpi_pick_optimism_share_grace_3000": 0.03822554833,
+  "kpi_pick_optimism_share_heuristic_3000": 0.7760060238,
+  "kpi_pick_optimism_share_irr_rule_3000": 0.03701964607,
+  "kpi_pick_optimism_share_oracle_3000": 0.02486352643,
+  "kpi_pick_optimism_share_random_3000": 1.171124624,
+  "kpi_planted_picks_gated_npv_3000": 0,
+  "kpi_planted_picks_gated_npv_per_dollar_3000": 1,
+  "kpi_planted_picks_grace_3000": 1,
+  "kpi_planted_picks_heuristic_3000": 21,
+  "kpi_planted_picks_irr_rule_3000": 1,
+  "kpi_planted_picks_oracle_3000": 1,
+  "kpi_planted_picks_random_3000": 3.41,
+  "kpi_regret_gated_npv_3000": 6816.729022,
+  "kpi_regret_gated_npv_per_dollar_3000": 2778.689428,
+  "kpi_regret_grace_3000": 3162.687585,
+  "kpi_regret_heuristic_3000": 14657.37696,
+  "kpi_regret_irr_rule_3000": 2778.689428,
+  "kpi_regret_oracle_3000": 0.0,
+  "kpi_regret_random_3000": 19440.57902
+ },
+ "m_estimation": {
+  "high_value_gap": 0.04215319749,
+  "holdout_cards": 165,
+  "low_value_gap": 0.07579810016,
+  "m_hat_by_era": {
+   "mid": 26.552164,
+   "modern": 28.84559439,
+   "vintage": 17.43944715
+  },
+  "mean_gap": 0.05907760308,
+  "prior_shift_spearman": {
+   "-0.1": 0.9946710055,
+   "0.1": 0.9935557655
+  }
+ },
+ "why": {
+  "backtest_sweep": {
+   "kind": "Simulated: true NPV per budget dollar at each solved budget of the sweep, each budget filled on its own (greedy fills are not nested).",
+   "lie": "A sweep cell that differed from the standalone run would mean two different backtests (guard: test_sweep_cell_equals_standalone_run).",
+   "question": "Does the rule order hold at every budget, or only at the one quoted?"
+  },
+  "batch_list": {
+   "kind": "Counted and simulated: the rule's own fill at this budget in buy order; predicted NPV is the engine's, true NPV is closed-form at the planted gem rate and true prices (synthetic truth); red rows are the generator's planted errors.",
+   "lie": "A batch interpolated between solved budgets would list cards no run bought, because greedy fills are not nested; every list is a solved run (guard: test_page_batches_equal_the_backtest_picks in tests/test_viz.py).",
+   "question": "Which cards does the rule actually buy at this budget, and which of them carry junk feed prices?"
+  },
+  "calibration": {
+   "kind": "Simulated: pooled p10 against a fresh simulated submission at each held-out card's latent rate (out-of-sample on the model's own generator).",
+   "lie": "One 30% holdout with one seed can be lucky; the planted selection effect must show as predictions above realized (guard: test_calibration_shows_planted_optimism).",
+   "question": "Are the pooled gem rates honest for a card nobody pre-screened?"
+  },
+  "corruption_leakage": {
+   "kind": "Counted: planted-error cards in the batch over batch size, and their share of the capital spent, against the liquid universe's planted base rate.",
+   "lie": "It would flatter the gates if junk cards were scored at their junk prices; they are scored at the base card's true prices (guard: test_junk_plants_true_prices_are_the_base_card).",
+   "question": "How much of the budget goes to cards whose feed prices are junk?"
+  },
+  "gates_classifier": {
+   "kind": "Counted: gate decisions against the generator's planted labels (synthetic truth), as recall per pathology and flag precision.",
+   "lie": "Plants that never approach a threshold would make recall and precision 1.00 by construction; plants straddle the gates on both sides (guard: tests/test_experiments.py, tests/test_gates.py).",
+   "question": "Do the gates catch junk feed rows without killing real grails?"
+  },
+  "gem_cv": {
+   "kind": "Simulated: 5-fold cross-validation over cards, scored by log loss, Brier and ECE against a fresh simulated submission per card (out-of-sample on the model's own generator), paired fold by fold against the shipped m = 40.",
+   "lie": "Era means or m_hat fit on all cards would leak the test fold (guard: test_changing_the_test_fold_leaves_the_fit_unchanged); a gap under one fold sd is printed as a null, and the log-loss clip count is shown so a 0-or-1 prediction cannot hide.",
+   "question": "Are the gem-rate probabilities themselves any good, and does pooling beat no pooling?"
+  },
+  "oracle_value_captured": {
+   "kind": "Simulated: closed-form expected NPV at the generator's planted gem rates and true prices (synthetic truth), divided by the exact-knapsack oracle's batch.",
+   "lie": "It would lie if the oracle were not the best batch (guard: the oracle-bound tests in tests/test_backtest.py); it scores the generator against itself, so the rule order is the claim, not the dollars.",
+   "question": "Of the money a perfectly informed buyer could make with this budget, how much does the ranking find?"
+  },
+  "pick_optimism": {
+   "kind": "Simulated: mean predicted p10 minus mean planted p10 of the picks, and predicted batch NPV minus true batch NPV (synthetic truth).",
+   "lie": "It would hide the pop-bias caveat if the truth reused the selection-boosted or predicted rates; every universe row's true NPV is recomputed from the planted latent rate and true prices, and a control shows the predicted rate gives other values (guard: test_universe_true_npv_is_recomputed_from_the_truth). It is reported, never tuned away.",
+   "question": "On the cards a rule actually buys, how much rosier is the engine than the truth?"
+  },
+  "regret_and_npv_per_budget_dollar": {
+   "kind": "Simulated: oracle true NPV minus the rule's true NPV, and the rule's true NPV divided by the budget B (synthetic truth).",
+   "lie": "Dividing by dollars spent would reward a rule that leaves cash idle, and an overspent budget would inflate it (guards: test_denominator_is_the_budget, test_no_rule_overspends_the_budget).",
+   "question": "How many dollars does each rule leave on the table at this budget?"
+  }
+ }
+}

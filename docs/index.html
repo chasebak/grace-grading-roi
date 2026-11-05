@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hand GRACE a Budget</title>
+<meta name="description" content="Drag a cash budget and watch GRACE, a common multiplier heuristic, random liquid cards and an exact-knapsack oracle each fill a grading batch, scored on synthetic truth.">
+<link rel="stylesheet" href="tokens.css">
+<style>
+  .control .ticks.stops { display: block; position: relative; height: 30px; margin: 2px 9px 0; }
+  .stops .stop { position: absolute; top: 0; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+  .stops .stop.first { transform: none; text-align: left; }
+  .stops .stop.last { transform: translateX(-100%); text-align: right; }
+  .stops .mark { display: block; width: 1px; height: 6px; margin: 0 auto 2px; background: var(--border); }
+  .stops .stop.first .mark { margin-left: 0; }
+  .stops .stop.last .mark { margin-right: 0; }
+  .stops .stop.on .mark { background: var(--accent); height: 8px; }
+  .budget-now { font-variant-numeric: tabular-nums; color: var(--accent); }
+  .chart-fallback { color: var(--text-muted); font-size: 0.9rem; margin: 8px 0; }
+  .note-line { font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 0; }
+  .segmented { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0 12px; }
+  .segmented button {
+    font: inherit; font-size: 0.9rem; padding: 4px 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface); color: var(--text);
+  }
+  .segmented button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-2); color: var(--accent); font-weight: 600; }
+  tr.planted td { color: var(--bad); }
+  tr.chosen td { background: var(--surface-2); font-weight: 600; }
+  td.num, th.num { text-align: right; }
+  .why p { margin: 0; }
+  details summary { cursor: pointer; color: var(--accent); margin: 8px 0; }
+  .whys .why + .why { margin-top: 8px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Hand GRACE a Budget</h1>
+  <p class="lede">Every ranking rule gets the same cash budget and buys the cards it ranks highest until the money runs out. Each batch is scored on synthetic truth, against the best batch an exact-knapsack oracle could buy knowing the true gem rates and prices.</p>
+  <p id="load-error" class="bad" hidden>The page data did not load. Serve the docs folder over HTTP (for example <code>python -m http.server -d docs</code>) instead of opening the file directly.</p>
+
+  <section class="card" id="headline-card">
+    <span class="provenance" data-prov="headline"></span>
+    <div class="tiles">
+      <div class="tile headline">
+        <div class="label" id="headline-label"></div>
+        <div class="value" id="headline-value"></div>
+        <div class="note" id="headline-note"></div>
+      </div>
+    </div>
+    <p class="note-line" id="headline-sweep"></p>
+    <p class="note-line" id="a-one-note"></p>
+    <div class="why" data-why="oracle_value_captured"></div>
+  </section>
+
+  <section class="card" id="budget-card">
+    <span class="provenance" data-prov="slider"></span>
+    <div class="control">
+      <label for="budget">Budget: <span class="budget-now" id="budget-now"></span></label>
+      <input type="range" id="budget" min="0" max="0" step="1" value="0">
+      <div class="ticks stops" id="ticks" aria-hidden="true"></div>
+    </div>
+    <h2>True NPV per budget dollar, at every solved budget</h2>
+    <span class="provenance" data-prov="chart"></span>
+    <div class="chart-box" id="chart-box">
+      <canvas id="chart" role="img" aria-label="True NPV per budget dollar against the budget for the oracle, GRACE, the heuristic and random liquid cards"></canvas>
+    </div>
+    <p class="chart-fallback" id="chart-fallback" hidden>chart unavailable, table shown</p>
+    <p class="note-line" id="spread-note"></p>
+    <details id="fallback-details">
+      <summary>The numbers behind the chart</summary>
+      <span class="provenance" data-prov="fallback"></span>
+      <div class="table-wrap"><table id="fallback-table"></table></div>
+    </details>
+    <div class="why" data-why="backtest_sweep"></div>
+  </section>
+
+  <section class="card" id="tiles-card">
+    <h2>At <span class="budget-now" data-budget-now></span>: GRACE against its baselines</h2>
+    <span class="provenance" data-prov="tiles"></span>
+    <div class="tiles" id="tiles"></div>
+    <div class="whys">
+      <div class="why" data-why="pick_optimism"></div>
+      <div class="why" data-why="corruption_leakage"></div>
+    </div>
+  </section>
+
+  <section class="card" id="rules-card">
+    <h2>Every rule at <span class="budget-now" data-budget-now></span></h2>
+    <span class="provenance" data-prov="rules_table"></span>
+    <div class="table-wrap"><table id="rules-table"></table></div>
+    <p class="note-line" id="bracket-note"></p>
+    <div class="why" data-why="regret_and_npv_per_budget_dollar"></div>
+  </section>
+
+  <section class="card" id="batch-card">
+    <h2>The batch at <span class="budget-now" data-budget-now></span></h2>
+    <span class="provenance" data-prov="batch"></span>
+    <div class="segmented" id="batch-rules" role="group" aria-label="Whose batch to list"></div>
+    <p id="batch-summary"></p>
+    <div class="table-wrap"><table id="batch-table"></table></div>
+    <div class="why" data-why="batch_list"></div>
+  </section>
+
+  <footer>
+    <p id="footer-text"></p>
+    <p>Data: <a href="data/summary.json">summary.json</a> · <a href="data/budget_grid.json">budget_grid.json</a> · <a href="data/meta.json">meta.json</a>, written by <code>python -m grace.viz build</code>.</p>
+  </footer>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="app.js"></script>
+</body>
+</html>

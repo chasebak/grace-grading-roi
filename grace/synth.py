@@ -40,6 +40,27 @@ ladder is the latent true gem rate plus a boost that shrinks with card
 value — submitters pre-screen low-value cards harder, so observed gem
 rates overstate P(10) for an unscreened raw card, most strongly at the
 low end.
+
+Knobs (generate() parameters; defaults reproduce synth/*.csv byte for byte,
+which tests/test_golden_data.py pins):
+  selection_boost_max  size of the submission-selection boost at V10 = 0
+                       (0.0 is the null control: observed = latent rates)
+  multiplier_scale     multiplies every clean card's drawn V10/raw
+                       multiplier before the [1.5, 55] clip (below 1.0 is a
+                       harsher market where grading pays less)
+
+True prices. generate_world() also returns each card's TRUE prices, for
+the decision backtest's truth model. They are plain copies of values the
+generator already drew, so capturing them adds no random draws:
+  clean (incl. borderline), genuine_grail  true = feed (the plant is real)
+  wrong_card, fake_grail, thin_outlier,    true = the base card's prices
+  bad_raw                                  before the plant overwrote them
+                                           (a junk feed row replaced a real
+                                           card; the card you hold is that
+                                           base card)
+Failure mode: a junk plant whose base card had no V9 has true_v9 = NaN;
+the truth model then uses the engine's 0.5*V10 fallback, so V9 truth for
+those cards is only as good as that fallback.
 """
 
 import math
@@ -68,6 +89,12 @@ ERA_MULT_SIGMA = {"modern": 0.7, "mid": 0.7, "vintage": 0.7}
 
 SELECTION_BOOST_MAX = 0.18
 SELECTION_BOOST_SCALE = 400.0  # dollars of V10 over which the boost decays
+MULTIPLIER_SCALE = 1.0  # default knob: the multiplier draws as fitted above
+MULTIPLIER_CLIP = (1.5, 55.0)
+
+# Truth labels whose feed prices are junk: the true prices are the base
+# card's, captured before the plant.
+JUNK_FEED_LABELS = ("wrong_card", "fake_grail", "thin_outlier", "bad_raw")
 
 PATHOLOGY_COUNTS = {
     "wrong_card": 25,
@@ -88,14 +115,29 @@ BORDERLINE_COUNTS = {
 
 BAD_RAW_SUBTHRESHOLD_FRACTION = 0.2
 
+# Share of the non-gem copies in a ladder that grade 9 (the rest grade <=8).
+# The decision backtest's truth model reuses this exact value.
+NINE_SHARE = 0.6
 
-def selection_boost(v10):
-    """Submission-selection inflation of the observed gem rate."""
-    return SELECTION_BOOST_MAX * math.exp(-v10 / SELECTION_BOOST_SCALE)
+
+def selection_boost(v10, boost_max=SELECTION_BOOST_MAX):
+    """Submission-selection inflation of the observed gem rate.
+
+    boost = boost_max * exp(-V10 / SELECTION_BOOST_SCALE); boost_max = 0
+    turns the effect off (the null control).
+    """
+    return boost_max * math.exp(-v10 / SELECTION_BOOST_SCALE)
 
 
-def _draw_base_card(rng, card_id, era):
-    """One clean card as a plain dict."""
+def _draw_base_card(rng, card_id, era, boost_max, multiplier_scale):
+    """One clean card as a plain dict.
+
+    The knobs change values, not which draws are made. They do NOT keep a
+    knob run aligned card by card with the default world: NumPy's binomial
+    sampler uses a value-dependent number of uniforms, so once a ladder's
+    gem rate moves, every later draw (and the plant assignment) shifts. A
+    knob run is its own seeded world.
+    """
     latent_mean = ERA_LATENT_MEAN[era]
     concentration = ERA_LATENT_CONCENTRATION[era]
     alpha = latent_mean * concentration
@@ -104,7 +146,8 @@ def _draw_base_card(rng, card_id, era):
 
     raw_price = rng.lognormal(math.log(ERA_RAW_MEDIAN[era]), ERA_RAW_SIGMA[era])
     multiplier = rng.lognormal(math.log(ERA_MULT_MEDIAN[era]), ERA_MULT_SIGMA[era])
-    multiplier = min(max(multiplier, 1.5), 55.0)
+    multiplier = multiplier * multiplier_scale
+    multiplier = min(max(multiplier, MULTIPLIER_CLIP[0]), MULTIPLIER_CLIP[1])
     v10 = raw_price * multiplier
 
     v9 = v10 * rng.uniform(0.3, 0.6)
@@ -131,11 +174,11 @@ def _draw_base_card(rng, card_id, era):
     if rng.uniform() < 0.08:
         n_ladder = 0
 
-    observed_p10 = latent_p10 + selection_boost(v10)
+    observed_p10 = latent_p10 + selection_boost(v10, boost_max)
     observed_p10 = min(max(observed_p10, 0.01), 0.95)
     if n_ladder > 0:
         n10 = int(rng.binomial(n_ladder, observed_p10))
-        n9 = int(rng.binomial(n_ladder - n10, 0.6))
+        n9 = int(rng.binomial(n_ladder - n10, NINE_SHARE))
     else:
         n10 = 0
         n9 = 0
@@ -292,15 +335,15 @@ def _plant_borderline_exempt_grail(rng, card):
     return f"borderline_clean;kind=exempt_grail;multiplier={multiplier:.0f}"
 
 
-def _refresh_ladder(rng, card, latent_p10):
+def _refresh_ladder(rng, card, latent_p10, boost_max):
     """Redraw the pop ladder after a plant moved V10, keeping the world
     self-consistent: the selection boost depends on the (new) V10."""
-    observed_p10 = latent_p10 + selection_boost(card["v10"])
+    observed_p10 = latent_p10 + selection_boost(card["v10"], boost_max)
     observed_p10 = min(max(observed_p10, 0.01), 0.95)
     n_ladder = card["n10"] + card["n9"] + card["n_le8"]
     if n_ladder > 0:
         n10 = int(rng.binomial(n_ladder, observed_p10))
-        n9 = int(rng.binomial(n_ladder - n10, 0.6))
+        n9 = int(rng.binomial(n_ladder - n10, NINE_SHARE))
     else:
         n10 = 0
         n9 = 0
@@ -310,19 +353,35 @@ def _refresh_ladder(rng, card, latent_p10):
     return observed_p10
 
 
-def generate(n_cards=DEFAULT_N_CARDS, seed=DEFAULT_SEED):
-    """Return (cards DataFrame, truth DataFrame), fully seeded."""
+def generate_world(
+    n_cards=DEFAULT_N_CARDS,
+    seed=DEFAULT_SEED,
+    selection_boost_max=SELECTION_BOOST_MAX,
+    multiplier_scale=MULTIPLIER_SCALE,
+):
+    """Return (cards, truth, true_prices) DataFrames, fully seeded.
+
+    true_prices has card_id, true_raw, true_v10, true_v9 (see the module
+    docstring for the rule). It lives in memory only: write() keeps the
+    committed CSVs unchanged, and the base-price capture below copies
+    values without drawing, so cards and truth equal generate()'s exactly.
+    """
     rng = np.random.default_rng(seed)
 
     cards = []
     latent_list = []
     observed_list = []
-    for card_id in range(n_cards):
+    base_prices = []
+    card_ids = range(n_cards)
+    for card_id in card_ids:
         era = str(rng.choice(ERA_NAMES, p=ERA_SHARES))
-        card, extras = _draw_base_card(rng, card_id, era)
+        card, extras = _draw_base_card(rng, card_id, era, selection_boost_max, multiplier_scale)
         cards.append(card)
         latent_list.append(extras["latent_p10"])
         observed_list.append(extras["observed_p10"])
+        # A copy, not a draw: the plants below overwrite these fields.
+        base_price = {"raw": card["raw_price"], "v10": card["v10"], "v9": card["v9"]}
+        base_prices.append(base_price)
 
     labels = ["clean"] * n_cards
     details = [""] * n_cards
@@ -373,7 +432,9 @@ def generate(n_cards=DEFAULT_N_CARDS, seed=DEFAULT_SEED):
                 detail = _plant_borderline_exempt_grail(rng, card)
             details[index] = detail
             if borderline_kind != "ratio_tail":  # these plants moved V10
-                observed_list[index] = _refresh_ladder(rng, card, latent_list[index])
+                observed_list[index] = _refresh_ladder(
+                    rng, card, latent_list[index], selection_boost_max
+                )
 
     truth_rows = []
     for index in range(n_cards):
@@ -389,8 +450,50 @@ def generate(n_cards=DEFAULT_N_CARDS, seed=DEFAULT_SEED):
         }
         truth_rows.append(truth_row)
 
+    price_rows = []
+    for index in card_ids:
+        label = labels[index]
+        if label in JUNK_FEED_LABELS:
+            source = base_prices[index]
+            true_raw = source["raw"]
+            true_v10 = source["v10"]
+            true_v9 = source["v9"]
+        else:
+            card = cards[index]
+            true_raw = card["raw_price"]
+            true_v10 = card["v10"]
+            true_v9 = card["v9"]
+        price_row = {
+            "card_id": cards[index]["card_id"],
+            "true_raw": true_raw,
+            "true_v10": true_v10,
+            "true_v9": true_v9,
+        }
+        price_rows.append(price_row)
+
     cards_df = pd.DataFrame(cards)
     truth_df = pd.DataFrame(truth_rows)
+    true_prices_df = pd.DataFrame(price_rows)
+    return cards_df, truth_df, true_prices_df
+
+
+def generate(
+    n_cards=DEFAULT_N_CARDS,
+    seed=DEFAULT_SEED,
+    selection_boost_max=SELECTION_BOOST_MAX,
+    multiplier_scale=MULTIPLIER_SCALE,
+):
+    """Return (cards DataFrame, truth DataFrame), fully seeded.
+
+    At the default knobs this reproduces synth/cards.csv and
+    synth/truth.csv byte for byte once written (tests/test_golden_data.py).
+    """
+    cards_df, truth_df, _true_prices_df = generate_world(
+        n_cards=n_cards,
+        seed=seed,
+        selection_boost_max=selection_boost_max,
+        multiplier_scale=multiplier_scale,
+    )
     return cards_df, truth_df
 
 

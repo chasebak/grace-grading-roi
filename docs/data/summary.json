@@ -1,0 +1,306 @@
+{
+ "batch_rules": [
+  "grace",
+  "heuristic",
+  "oracle"
+ ],
+ "chart_rules": [
+  "oracle",
+  "grace",
+  "heuristic",
+  "random"
+ ],
+ "default_budget": 3000,
+ "footer": "Every number was computed by this repo's tested Python and copied; the page computes nothing.",
+ "generated_by": "python -m grace.viz build (Experiment 4 functions, synthetic data)",
+ "headline": {
+  "gated_npv": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.0,
+   "leakage_share": 0.0,
+   "mean_predicted_p10": 0.2972516437,
+   "mean_true_p10": 0.2724839065,
+   "n_picks": 12,
+   "npv_per_budget_dollar": 5.088198588,
+   "npv_per_dollar_spent": 5.088710211,
+   "oracle_value_captured": 0.691289853,
+   "pick_optimism_dollars": 72.16866623,
+   "pick_optimism_p10": 0.02476773725,
+   "pick_optimism_share": 0.004727846538,
+   "planted_picks": 0,
+   "predicted_npv": 15336.76443,
+   "regret": 6816.729022,
+   "spent": 2999.698378,
+   "true_npv": 15264.59576
+  },
+  "gated_npv_per_dollar": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.03980252324,
+   "leakage_share": 0.04166666667,
+   "mean_predicted_p10": 0.3639645285,
+   "mean_true_p10": 0.3164553091,
+   "n_picks": 24,
+   "npv_per_budget_dollar": 6.434211786,
+   "npv_per_dollar_spent": 6.50537622,
+   "oracle_value_captured": 0.8741611088,
+   "pick_optimism_dollars": 714.5767291,
+   "pick_optimism_p10": 0.04750921942,
+   "pick_optimism_share": 0.03701964607,
+   "planted_picks": 1,
+   "predicted_npv": 20017.21209,
+   "regret": 2778.689428,
+   "spent": 2967.182021,
+   "true_npv": 19302.63536
+  },
+  "grace": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.03951481406,
+   "leakage_share": 0.05,
+   "mean_predicted_p10": 0.3469888685,
+   "mean_true_p10": 0.3034960852,
+   "n_picks": 20,
+   "npv_per_budget_dollar": 6.306212401,
+   "npv_per_dollar_spent": 6.329873024,
+   "oracle_value_captured": 0.8567709313,
+   "pick_optimism_dollars": 723.1752807,
+   "pick_optimism_p10": 0.04349278324,
+   "pick_optimism_share": 0.03822554833,
+   "planted_picks": 1,
+   "predicted_npv": 19641.81248,
+   "regret": 3162.687585,
+   "spent": 2988.78621,
+   "true_npv": 18918.6372
+  },
+  "heuristic": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.7850742872,
+   "leakage_share": 0.75,
+   "mean_predicted_p10": 0.3762254268,
+   "mean_true_p10": 0.3206795976,
+   "n_picks": 28,
+   "npv_per_budget_dollar": 2.474649274,
+   "npv_per_dollar_spent": 2.475036998,
+   "oracle_value_captured": 0.3362093486,
+   "pick_optimism_dollars": 5761.02823,
+   "pick_optimism_p10": 0.05554582913,
+   "pick_optimism_share": 0.7760060238,
+   "planted_picks": 21,
+   "predicted_npv": 13184.97605,
+   "regret": 14657.37696,
+   "spent": 2999.530038,
+   "true_npv": 7423.947822
+  },
+  "irr_rule": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.03980252324,
+   "leakage_share": 0.04166666667,
+   "mean_predicted_p10": 0.3639645285,
+   "mean_true_p10": 0.3164553091,
+   "n_picks": 24,
+   "npv_per_budget_dollar": 6.434211786,
+   "npv_per_dollar_spent": 6.50537622,
+   "oracle_value_captured": 0.8741611088,
+   "pick_optimism_dollars": 714.5767291,
+   "pick_optimism_p10": 0.04750921942,
+   "pick_optimism_share": 0.03701964607,
+   "planted_picks": 1,
+   "predicted_npv": 20017.21209,
+   "regret": 2778.689428,
+   "spent": 2967.182021,
+   "true_npv": 19302.63536
+  },
+  "oracle": {
+   "bracket_width": 0.0,
+   "budget": 3000.0,
+   "leakage_capital_share": 0.03938984163,
+   "leakage_share": 0.04545454545,
+   "mean_predicted_p10": 0.3528520337,
+   "mean_true_p10": 0.3177769252,
+   "n_picks": 22,
+   "npv_per_budget_dollar": 7.360441595,
+   "npv_per_dollar_spent": 7.364691629,
+   "oracle_value_captured": 1.0,
+   "pick_optimism_dollars": 549.0196025,
+   "pick_optimism_p10": 0.03507510846,
+   "pick_optimism_share": 0.02486352643,
+   "planted_picks": 1,
+   "predicted_npv": 22630.34439,
+   "regret": 0.0,
+   "spent": 2998.268753,
+   "true_npv": 22081.32479,
+   "upper_bound": 22081.32479
+  },
+  "random": {
+   "budget": 3000.0,
+   "leakage_capital_share": 0.1375442308,
+   "leakage_share": 0.1484539011,
+   "mean_predicted_p10": 0.3660276129,
+   "mean_true_p10": 0.3039134685,
+   "n_picks": 22.715,
+   "npv_per_budget_dollar": 0.8802485874,
+   "npv_per_dollar_spent": 0.8900270615,
+   "oracle_value_captured": 0.1195918174,
+   "pick_optimism_dollars": 987.9058101,
+   "pick_optimism_p10": 0.06211414433,
+   "pick_optimism_share": 1.171124624,
+   "planted_picks": 3.41,
+   "predicted_npv": 3628.651572,
+   "regret": 19440.57902,
+   "spent": 2967.125296,
+   "true_npv": 2640.745762
+  }
+ },
+ "label_text": {
+  "bad_raw": "planted error: corrupted raw price",
+  "clean": "clean",
+  "fake_grail": "planted error: fake grail",
+  "genuine_grail": "genuine grail (real, kept)",
+  "thin_outlier": "planted error: thin outlier",
+  "wrong_card": "planted error: wrong-card V10"
+ },
+ "nesting": {
+  "grace": {
+   "not_nested": 5,
+   "pairs": 27
+  },
+  "heuristic": {
+   "not_nested": 1,
+   "pairs": 27
+  },
+  "oracle": {
+   "not_nested": 8,
+   "pairs": 27
+  }
+ },
+ "provenance": {
+  "batch": "synthetic truth \u00b7 the rule's solved batch at the chosen budget",
+  "chart": "synthetic truth \u00b7 precomputed at 28 budgets \u00b7 random = mean of 200 seeded shuffles",
+  "fallback": "synthetic truth \u00b7 precomputed at 28 budgets",
+  "headline": "synthetic truth \u00b7 $3,000 budget \u00b7 the README headline",
+  "rules_table": "synthetic truth \u00b7 every rule at the chosen budget \u00b7 precomputed",
+  "slider": "snaps to 28 solved budgets",
+  "tiles": "synthetic truth \u00b7 precomputed at the chosen budget"
+ },
+ "rule_labels": {
+  "gated_npv": "Gated NPV",
+  "gated_npv_per_dollar": "Gated NPV per dollar",
+  "grace": "GRACE (NPV / sqrt(capital), gated)",
+  "heuristic": "A common multiplier heuristic (V10/raw, no gates)",
+  "irr_rule": "IRR rule",
+  "oracle": "Oracle (exact knapsack)",
+  "random": "Random liquid cards"
+ },
+ "rule_short_labels": {
+  "gated_npv": "Gated NPV",
+  "gated_npv_per_dollar": "Gated NPV per $",
+  "grace": "GRACE",
+  "heuristic": "Heuristic",
+  "irr_rule": "IRR rule",
+  "oracle": "Oracle",
+  "random": "Random"
+ },
+ "settings": {
+  "budgets": [
+   250,
+   500,
+   750,
+   1000,
+   1250,
+   1500,
+   1750,
+   2000,
+   2250,
+   2500,
+   2750,
+   3000,
+   3500,
+   4000,
+   4500,
+   5000,
+   5500,
+   6000,
+   7000,
+   8000,
+   9000,
+   10000,
+   11000,
+   12000,
+   14000,
+   16000,
+   18000,
+   20000
+  ],
+  "random_draws": 200,
+  "random_seed": 4004,
+  "tick_label_budgets": [
+   250,
+   1000,
+   3000,
+   10000,
+   20000
+  ],
+  "tier": "regular"
+ },
+ "spread_band": "No p5-p95 band: the lines come from one synthetic world, and a spread over generator seeds is not computed yet (to measure).",
+ "sweep_facts": {
+  "grace_beats_heuristic": 28,
+  "grace_leakage_below_base_rate": 28,
+  "heuristic_beats_random": 28,
+  "irr_rule_same_picks_as_npv_per_dollar": 28,
+  "max_budget": 20000,
+  "min_budget": 250,
+  "n_budgets": 28,
+  "npv_per_dollar_beats_grace": 24
+ },
+ "table_rules": [
+  "grace",
+  "gated_npv",
+  "gated_npv_per_dollar",
+  "irr_rule",
+  "heuristic",
+  "random",
+  "oracle"
+ ],
+ "title": "Hand GRACE a Budget",
+ "universe": {
+  "n_gated": 169,
+  "n_gated_planted": 13,
+  "n_liquid": 451,
+  "n_planted": 67,
+  "n_true_npv_positive": 222,
+  "planted_base_rate": 0.1485587583,
+  "total_true_capital": 59345.84314
+ },
+ "why": {
+  "backtest_sweep": {
+   "kind": "Simulated: true NPV per budget dollar at each solved budget of the sweep, each budget filled on its own (greedy fills are not nested).",
+   "lie": "A sweep cell that differed from the standalone run would mean two different backtests (guard: test_sweep_cell_equals_standalone_run).",
+   "question": "Does the rule order hold at every budget, or only at the one quoted?"
+  },
+  "batch_list": {
+   "kind": "Counted and simulated: the rule's own fill at this budget in buy order; predicted NPV is the engine's, true NPV is closed-form at the planted gem rate and true prices (synthetic truth); red rows are the generator's planted errors.",
+   "lie": "A batch interpolated between solved budgets would list cards no run bought, because greedy fills are not nested; every list is a solved run (guard: test_page_batches_equal_the_backtest_picks in tests/test_viz.py).",
+   "question": "Which cards does the rule actually buy at this budget, and which of them carry junk feed prices?"
+  },
+  "corruption_leakage": {
+   "kind": "Counted: planted-error cards in the batch over batch size, and their share of the capital spent, against the liquid universe's planted base rate.",
+   "lie": "It would flatter the gates if junk cards were scored at their junk prices; they are scored at the base card's true prices (guard: test_junk_plants_true_prices_are_the_base_card).",
+   "question": "How much of the budget goes to cards whose feed prices are junk?"
+  },
+  "oracle_value_captured": {
+   "kind": "Simulated: closed-form expected NPV at the generator's planted gem rates and true prices (synthetic truth), divided by the exact-knapsack oracle's batch.",
+   "lie": "It would lie if the oracle were not the best batch (guard: the oracle-bound tests in tests/test_backtest.py); it scores the generator against itself, so the rule order is the claim, not the dollars.",
+   "question": "Of the money a perfectly informed buyer could make with this budget, how much does the ranking find?"
+  },
+  "pick_optimism": {
+   "kind": "Simulated: mean predicted p10 minus mean planted p10 of the picks, and predicted batch NPV minus true batch NPV (synthetic truth).",
+   "lie": "It would hide the pop-bias caveat if the truth reused the selection-boosted or predicted rates; every universe row's true NPV is recomputed from the planted latent rate and true prices, and a control shows the predicted rate gives other values (guard: test_universe_true_npv_is_recomputed_from_the_truth). It is reported, never tuned away.",
+   "question": "On the cards a rule actually buys, how much rosier is the engine than the truth?"
+  },
+  "regret_and_npv_per_budget_dollar": {
+   "kind": "Simulated: oracle true NPV minus the rule's true NPV, and the rule's true NPV divided by the budget B (synthetic truth).",
+   "lie": "Dividing by dollars spent would reward a rule that leaves cash idle, and an overspent budget would inflate it (guards: test_denominator_is_the_budget, test_no_rule_overspends_the_budget).",
+   "question": "How many dollars does each rule leave on the table at this budget?"
+  }
+ }
+}

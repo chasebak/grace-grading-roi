@@ -144,6 +144,97 @@ def false_positive_cost(cards_df, truth_df, cfg=DEFAULT_CONFIG):
     return cost
 
 
+def clean_flags_by_kind(cards_df, truth_df):
+    """Flagged clean cards counted by borderline kind ("other" if none).
+
+    Why: precision is only meaningful because the borderline-legit clean
+    cards can be lost; this says which kind the ladder loses.
+    """
+    details = truth_df["detail"].fillna("").astype(str).tolist()
+    labels = truth_df["label"].tolist()
+    records = cards_df.to_dict("records")
+    counts = {}
+    numbered_records = list(enumerate(records))
+    for index, card in numbered_records:
+        if labels[index] != "clean":
+            continue
+        decision = gates_mod.apply_gates(card)
+        flagged = decision.dropped or decision.raw_confidence == "repaired"
+        if not flagged:
+            continue
+        kind = "other"
+        detail = details[index]
+        if detail.startswith("borderline_clean"):
+            kind_part = detail.split(";")[1]
+            kind = kind_part.split("=")[1]
+        counts[kind] = counts.get(kind, 0) + 1
+    return counts
+
+
+def miss_details(cards_df, truth_df):
+    """For each pathology, the plant sizes of the cards the ladder missed.
+
+    wrong_card: V10 / graded-10 sold median; fake_grail and thin_outlier:
+    V10; bad_raw: the planted divisor (from the truth detail). Each list is
+    sorted. Why: every miss should be a sub-threshold plant; these values
+    show it (README prose quotes them, the drift test pins them).
+    """
+    labels = truth_df["label"].tolist()
+    details = truth_df["detail"].fillna("").astype(str).tolist()
+    records = cards_df.to_dict("records")
+    misses = {}
+    for pathology in PATHOLOGY_LABELS:
+        misses[pathology] = []
+    numbered_records = list(enumerate(records))
+    for index, card in numbered_records:
+        label = labels[index]
+        if label not in misses:
+            continue
+        decision = gates_mod.apply_gates(card)
+        flagged = decision.dropped or decision.raw_confidence == "repaired"
+        if flagged:
+            continue
+        if label == "wrong_card":
+            size = float(card["v10"]) / float(card["grade10_sold_median"])
+        elif label == "bad_raw":
+            divisor_part = details[index].split(";")[0]
+            size = float(divisor_part.split("=")[1])
+        else:
+            size = float(card["v10"])
+        misses[label].append(size)
+    for pathology in PATHOLOGY_LABELS:
+        misses[pathology].sort()
+    return misses
+
+
+def summary_lines(metrics, cost):
+    """The printed classifier summary (the README quotes these lines)."""
+    lines = ["pathology      planted caught  recall"]
+    for name in PATHOLOGY_LABELS:
+        entry = metrics["per_pathology"][name]
+        lines.append(
+            f"{name:<14} {entry['planted']:>7} {entry['caught']:>6} {entry['recall']:>7.2f}"
+        )
+    lines.append(
+        f"flag precision (flagged cards that were planted): {metrics['flag_precision']:.2f}"
+    )
+    lines.append(
+        f"drop precision (dropped cards that were planted): {metrics['drop_precision']:.2f}"
+    )
+    lines.append(f"clean cards flagged: {metrics['clean_flagged']}/{metrics['clean_total']}")
+    lines.append(f"genuine grails kept: {metrics['grail_survived']}/{metrics['grail_total']}")
+    lines.append(
+        "borderline exempt grails kept: "
+        f"{metrics['exempt_grail_survived']}/{metrics['exempt_grail_total']}"
+    )
+    lines.append(
+        f"false-positive cost: {cost['clean_dropped']} clean cards dropped, "
+        f"{cost['positive_npv_drops']} with positive shadow NPV, "
+        f"${cost['forgone_npv_total']:,.0f} NPV forgone"
+    )
+    return lines
+
+
 def make_figure(metrics, out_path):
     import matplotlib.pyplot as plt
 
@@ -192,24 +283,10 @@ def main(argv=None):
     metrics = evaluate(cards_df, truth_df)
 
     print("gate ladder as a classifier (against planted truth)")
-    print(f"{'pathology':<14} {'planted':>7} {'caught':>6} {'recall':>7}")
-    for name in PATHOLOGY_LABELS:
-        entry = metrics["per_pathology"][name]
-        print(f"{name:<14} {entry['planted']:>7} {entry['caught']:>6} {entry['recall']:>7.2f}")
-    print(f"flag precision (flagged cards that were planted): {metrics['flag_precision']:.2f}")
-    print(f"drop precision (dropped cards that were planted): {metrics['drop_precision']:.2f}")
-    print(f"clean cards flagged: {metrics['clean_flagged']}/{metrics['clean_total']}")
-    print(f"genuine grails kept: {metrics['grail_survived']}/{metrics['grail_total']}")
-    print(
-        "borderline exempt grails kept: "
-        f"{metrics['exempt_grail_survived']}/{metrics['exempt_grail_total']}"
-    )
     cost = false_positive_cost(cards_df, truth_df)
-    print(
-        f"false-positive cost: {cost['clean_dropped']} clean cards dropped, "
-        f"{cost['positive_npv_drops']} with positive shadow NPV, "
-        f"${cost['forgone_npv_total']:,.0f} NPV forgone"
-    )
+    lines = summary_lines(metrics, cost)
+    for line in lines:
+        print(line)
     print()
     print("drop reasons by planted label:")
     sorted_keys = sorted(metrics["reason_by_label"].keys())

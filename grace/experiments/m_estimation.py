@@ -166,6 +166,46 @@ def prior_sensitivity(cards_df, cfg=DEFAULT_CONFIG):
     return correlations
 
 
+def compute_summary(cards_df, truth_df, cfg=DEFAULT_CONFIG):
+    """Every number main() prints, as a dict (the report copies it)."""
+    estimates = m_estimates_by_era(cards_df)
+    per_card, _binned = calibration_table(cards_df, truth_df, cfg)
+    gap_series = per_card["predicted_p10"] - per_card["realized_gem_rate"]
+    low = per_card[per_card["value_group"] == "low_value"]
+    high = per_card[per_card["value_group"] == "high_value"]
+    low_gap = float((low["predicted_p10"] - low["realized_gem_rate"]).mean())
+    high_gap = float((high["predicted_p10"] - high["realized_gem_rate"]).mean())
+    correlations = prior_sensitivity(cards_df, cfg)
+    summary = {
+        "m_hat_by_era": estimates,
+        "holdout_cards": len(per_card),
+        "mean_gap": float(gap_series.mean()),
+        "low_value_gap": low_gap,
+        "high_value_gap": high_gap,
+        "prior_shift_spearman": correlations,
+    }
+    return summary
+
+
+def summary_lines(summary):
+    """The printed m-estimation summary (the README quotes these lines)."""
+    lines = ["beta-binomial method-of-moments pseudo-count (vs fixed m=40):"]
+    estimates = summary["m_hat_by_era"]
+    eras = sorted(estimates.keys())
+    for era in eras:
+        lines.append(f"  {era:<8} m_hat = {estimates[era]:.1f}")
+    lines.append(f"held-out cards: {summary['holdout_cards']}")
+    lines.append(f"mean (predicted - realized) gem rate: {summary['mean_gap']:+.3f}")
+    lines.append(f"  low-value cards:  {summary['low_value_gap']:+.3f}")
+    lines.append(f"  high-value cards: {summary['high_value_gap']:+.3f}")
+    lines.append("prior sensitivity (Spearman of GRACE ranking vs default priors):")
+    correlations = summary["prior_shift_spearman"]
+    shifts = sorted(correlations.keys())
+    for shift in shifts:
+        lines.append(f"  era priors {shift:+.2f}: rho = {correlations[shift]:.3f}")
+    return lines
+
+
 def make_figure(per_card, binned, out_path):
     import matplotlib.pyplot as plt
 
@@ -219,26 +259,12 @@ def main(argv=None):
 
     cards_df, truth_df = synth.load(args.synth_dir)
 
-    estimates = m_estimates_by_era(cards_df)
-    print("beta-binomial method-of-moments pseudo-count (vs fixed m=40):")
-    for era in sorted(estimates.keys()):
-        print(f"  {era:<8} m_hat = {estimates[era]:.1f}")
+    summary = compute_summary(cards_df, truth_df)
+    lines = summary_lines(summary)
+    for line in lines:
+        print(line)
 
     per_card, binned = calibration_table(cards_df, truth_df)
-    gap = float((per_card["predicted_p10"] - per_card["realized_gem_rate"]).mean())
-    low = per_card[per_card["value_group"] == "low_value"]
-    high = per_card[per_card["value_group"] == "high_value"]
-    low_gap = float((low["predicted_p10"] - low["realized_gem_rate"]).mean())
-    high_gap = float((high["predicted_p10"] - high["realized_gem_rate"]).mean())
-    print(f"held-out cards: {len(per_card)}")
-    print(f"mean (predicted - realized) gem rate: {gap:+.3f}")
-    print(f"  low-value cards:  {low_gap:+.3f}")
-    print(f"  high-value cards: {high_gap:+.3f}")
-
-    correlations = prior_sensitivity(cards_df)
-    print("prior sensitivity (Spearman of GRACE ranking vs default priors):")
-    for shift in sorted(correlations.keys()):
-        print(f"  era priors {shift:+.2f}: rho = {correlations[shift]:.3f}")
 
     os.makedirs(args.figure_dir, exist_ok=True)
     figure_path = os.path.join(args.figure_dir, "calibration.png")
