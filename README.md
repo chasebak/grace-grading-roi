@@ -34,8 +34,6 @@ untracked `out/`, and prints its own elapsed time (about a second).
 
 Provenance: Public re-implementation of the grading-ROI engine from my private platform.
 
-<!-- What this shows: Chase writes this paragraph himself before the v2 commit. -->
-
 ## KPIs
 
 Every value below is printed by `python -m grace.report` into
