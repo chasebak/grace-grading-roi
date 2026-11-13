@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grading Play Calculator</title>
+<meta name="description" content="One card, three grading companies, every service level: which is the best play, or should you sell it raw today, once every payment and payout is valued at the day it actually happens.">
+<link rel="stylesheet" href="../tokens.css">
+<style>
+  .crumb { font-size: 0.9rem; margin: 0 0 12px; }
+  .primer { font-size: 0.95rem; margin-bottom: 16px; }
+  .chart-fallback { color: var(--text-muted); font-size: 0.9rem; margin: 8px 0; }
+  .note-line { font-size: 0.85rem; color: var(--text-muted); margin: 8px 0 0; }
+  h3 { font-size: 1rem; margin: 20px 0 6px; }
+  .card > h2:first-child, .card > .provenance + h2 { margin-top: 0; }
+  fieldset { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px 12px; margin: 12px 0 0; min-width: 0; }
+  legend { font-weight: 600; padding: 0 6px; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px 12px; align-items: end; }
+  .fields + .fields { margin-top: 10px; }
+  .field { min-width: 0; }
+  .field label, .field .label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 2px; }
+  .field input, .field select, td input {
+    width: 100%; min-width: 0; font: inherit; font-variant-numeric: tabular-nums;
+    padding: 6px 8px; border: 1px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text);
+  }
+  .field input:focus-visible, .field select:focus-visible, td input:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+  .field input[aria-invalid="true"], td input[aria-invalid="true"] { border-color: var(--bad); }
+  .field .readout { padding: 6px 0; font-variant-numeric: tabular-nums; }
+  .field.wide { grid-column: 1 / -1; }
+  .field input[type="range"] { padding: 0; border: 0; accent-color: var(--accent); }
+  .companies { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; }
+  .companies fieldset { margin-top: 12px; }
+  .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; }
+  .source { font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 0; overflow-wrap: anywhere; }
+  .segmented { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 0; }
+  .segmented button, button.small {
+    font: inherit; font-size: 0.9rem; padding: 4px 12px; cursor: pointer;
+    border: 1px solid var(--border); border-radius: 999px;
+    background: var(--surface); color: var(--text);
+  }
+  .segmented button[aria-pressed="true"] { border-color: var(--accent); background: var(--surface-2); color: var(--accent); font-weight: 600; }
+  button.small { font-size: 0.8rem; margin-top: 10px; }
+  tr.chosen td { background: var(--surface-2); font-weight: 600; }
+  tr.flagged td { color: var(--text-muted); }
+  td.num, th.num { text-align: right; }
+  td.wrap { white-space: normal; min-width: 280px; }
+  td input { min-width: 72px; }
+  .why p { margin: 0; }
+  details summary { cursor: pointer; color: var(--accent); margin: 8px 0; }
+  .tile .value { font-variant-numeric: normal; }
+  .tile.cost .value { color: var(--text); }
+  .flows { grid-template-columns: repeat(auto-fit, minmax(136px, 1fr)); }
+  .flows .tile .value { font-size: 1.25rem; }
+  .not-claimed ul { margin: 0; padding-left: 20px; }
+  .not-claimed li { margin-bottom: 6px; }
+  .chart-box.tall { height: 360px; }
+  body { padding-bottom: 80px; }
+  .live-bar {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 5;
+    padding: 8px var(--gutter); font-size: 0.9rem; text-align: center;
+    background: var(--surface); border-top: 1px solid var(--border);
+  }
+  .live-bar a { margin-left: 10px; white-space: nowrap; }
+  .live-bar b { font-weight: 650; }
+</style>
+</head>
+<body>
+<main>
+  <p class="crumb"><a href="../">&larr; Hand GRACE a Budget</a></p>
+  <h1>Grading Play Calculator</h1>
+  <p class="lede">You have a card. Which grading company and service level is the best play, or should you sell it raw today? Every payment and payout is valued at the day it actually happens.</p>
+  <p class="primer">Grading means mailing a raw (ungraded) card to a company that inspects it, gives it a grade and seals it in a labelled case. The top grade (a 10, &ldquo;gem mint&rdquo;) usually sells for far more than the second grade (a 9), and a lower grade often sells for about the raw price, while you paid the fee and waited either way.</p>
+  <p id="load-error" class="bad" hidden>The page data did not load. Serve the docs folder over HTTP (for example <code>python -m http.server -d docs</code>, then open <code>/play/</code>) instead of opening the file directly.</p>
+
+  <section class="card" id="inputs-card">
+    <h2>Your card and your money</h2>
+    <span class="provenance" data-prov="inputs"></span>
+
+    <fieldset id="card-fields">
+      <legend>The card</legend>
+      <div class="fields">
+        <div class="field"><label for="raw_value_now">Raw value now ($, before selling fees)</label><input type="number" id="raw_value_now" data-input="raw_value_now" min="0" step="1" inputmode="decimal"></div>
+        <div class="field"><label for="quantity">Identical cards in the batch</label><input type="number" id="quantity" data-input="quantity" min="1" step="1" inputmode="numeric"></div>
+        <div class="field"><label for="sell_fee_pct">Selling fee (%)</label><input type="number" id="sell_fee_pct" data-input="sell_fee_pct" min="0" max="100" step="0.5" inputmode="decimal"></div>
+        <div class="field"><label for="ship_to_buyer">Ship to the buyer ($ per card)</label><input type="number" id="ship_to_buyer" data-input="ship_to_buyer" min="0" step="0.5" inputmode="decimal"></div>
+      </div>
+    </fieldset>
+
+    <fieldset id="rate-fields">
+      <legend>Opportunity rate (the discount rate)</legend>
+      <p class="note-line">What the same money would earn somewhere else, per week. A dollar you get later, or pay later, is worth less today by this rate.</p>
+      <div class="fields">
+        <div class="field"><label for="weekly_rate_pct">% per week</label><input type="number" id="weekly_rate_pct" data-input="weekly_rate_pct" min="0" step="0.25" inputmode="decimal"></div>
+        <div class="field wide"><label for="weekly_rate_slider">Drag: 0% to 10% a week</label><input type="range" id="weekly_rate_slider" min="0" max="10" step="0.25"></div>
+      </div>
+      <div class="segmented" id="rate-presets" role="group" aria-label="Opportunity rate presets"></div>
+      <p class="note-line" id="rate-note"></p>
+    </fieldset>
+
+    <h3>Odds and sale prices, per company</h3>
+    <span class="provenance" data-prov="example"></span>
+    <div class="companies" id="company-panels"></div>
+
+    <fieldset id="shipping-fields">
+      <legend>Shipping and timing</legend>
+      <span class="provenance" data-prov="illustrative"></span>
+      <div class="fields">
+        <div class="field"><label for="days_out">Days to reach the grader</label><input type="number" id="days_out" data-input="days_out" min="0" step="1" inputmode="numeric"></div>
+        <div class="field"><label for="days_back">Days to come back</label><input type="number" id="days_back" data-input="days_back" min="0" step="1" inputmode="numeric"></div>
+        <div class="field"><label for="ship_out_batch">Ship out ($ per batch)</label><input type="number" id="ship_out_batch" data-input="ship_out_batch" min="0" step="1" inputmode="decimal"></div>
+        <div class="field"><label for="ship_back_batch">Return shipping ($ per batch)</label><input type="number" id="ship_back_batch" data-input="ship_back_batch" min="0" step="1" inputmode="decimal"></div>
+        <div class="field"><label for="sell_days">Days to find a buyer once it is back</label><input type="number" id="sell_days" data-input="sell_days" min="0" step="1" inputmode="numeric"></div>
+      </div>
+      <p class="note-line">Each company states its turnaround as an estimated range of business days. Business days become calendar days at &times; 7/5. Which end of the range should the timeline use?</p>
+      <div class="segmented" id="range-modes" role="group" aria-label="Which end of the stated turnaround range"></div>
+    </fieldset>
+
+    <h3 id="services">Service levels and prices</h3>
+    <p class="note-line">Service prices and estimated turnaround times were read from the official PSA and TAG pages on 2026-11-12; they change without notice.<span id="official-links"></span> The results table further down lists every level&rsquo;s fee and turnaround.</p>
+    <details id="services-details">
+      <summary>Show the price lists, and enter BGS prices</summary>
+      <div id="service-tables"></div>
+    </details>
+  </section>
+
+  <section class="card" id="bars-card">
+    <span class="provenance" data-prov="computed"></span>
+    <div class="tiles">
+      <div class="tile headline">
+        <div class="label" id="answer-label"></div>
+        <div class="value" id="answer-value"></div>
+        <div class="note" id="answer-note"></div>
+      </div>
+    </div>
+    <h2>Value of the play, per card: every level you can use</h2>
+    <p class="note-line">Zero is selling the card raw today. A bar to the right beats that; a bar to the left loses to it. Hover or tap a bar for the breakdown; click one to see its cash flows below.</p>
+    <div class="chart-box" id="bars-box">
+      <canvas id="bars-chart" role="img" aria-label="Value of the play for every eligible service level, coloured by company, against selling raw today at zero"></canvas>
+    </div>
+    <p class="chart-fallback" id="bars-fallback" hidden>chart unavailable, table shown</p>
+    <p class="note-line" id="bars-notes"></p>
+    <div class="why" data-why="play_bars"></div>
+  </section>
+
+  <section class="card" id="rates-card">
+    <span class="provenance" data-prov="computed"></span>
+    <h2>The same plays at every weekly rate from 0% to 10%</h2>
+    <p class="note-line">Each line is one level. The dashed line marks your rate. Where two lines cross, the better level changes; where the top line dips under zero, selling raw today wins.</p>
+    <div class="chart-box tall" id="rates-box">
+      <canvas id="rates-chart" role="img" aria-label="Value of the play against the weekly opportunity rate for every eligible service level"></canvas>
+    </div>
+    <p class="chart-fallback" id="rates-fallback" hidden>chart unavailable, table shown</p>
+    <p class="note-line" id="rates-off-chart" hidden></p>
+    <p class="note-line" id="rates-segments"></p>
+    <details id="rates-details">
+      <summary>The numbers behind the chart</summary>
+      <div class="table-wrap"><table id="rates-table"></table></div>
+    </details>
+    <div class="why" data-why="rate_lines"></div>
+  </section>
+
+  <section class="card" id="table-card">
+    <span class="provenance" data-prov="computed"></span>
+    <h2>Every level, per card</h2>
+    <div class="table-wrap"><table id="results-table"></table></div>
+    <p class="note-line" id="table-notes"></p>
+    <div class="why" data-why="results_table"></div>
+  </section>
+
+  <section class="card" id="flows-card">
+    <span class="provenance" data-prov="computed"></span>
+    <h2>When each dollar moves</h2>
+    <div class="fields">
+      <div class="field wide"><label for="flow-tier">Level</label><select id="flow-tier"></select></div>
+    </div>
+    <div class="tiles flows" id="flow-strip"></div>
+    <p class="note-line" id="flow-summary"></p>
+    <div class="why" data-why="cash_flows"></div>
+  </section>
+
+  <section class="card not-claimed" id="not-claimed">
+    <h2>What this does NOT claim</h2>
+    <ul>
+      <li><b>The turnaround times are estimates, not guarantees.</b> They are each company's own published estimates; a slow batch moves every number on this page.</li>
+      <li><b>The odds and the sale prices are your inputs.</b> The starting numbers are one example, the same for every company. Real cards from different companies sell for different prices, so enter your own comps per company.</li>
+      <li><b>Not investment advice.</b> It is arithmetic on the numbers you type.</li>
+      <li><b>BGS is not verified.</b> No BGS price or turnaround was read; its rows stay empty and out of every chart and ranking until you type them in.</li>
+      <li><b>When each company charges is a setting.</b> PSA&rsquo;s default (after grading) comes from the author&rsquo;s own orders, not from a PSA page; change it if your orders differ.</li>
+      <li><b>One flat weekly rate stands in for your other use of the money.</b> A real project may not take the same dollars every week, and its return is not certain.</li>
+      <li><b>Not modelled:</b> taxes, insurance, a lost or damaged card, membership fees and any upcharge a company adds after grading.</li>
+    </ul>
+  </section>
+
+  <footer>
+    <p id="footer-text"></p>
+    <p>Data: <a href="data/tiers.json">tiers.json</a> (service tables and defaults) &middot; <a href="data/parity.json">parity.json</a> (the fixtures the browser formulas are tested on), written by <code>python -m grace.play build</code>. Back to <a href="../">Hand GRACE a Budget</a>.</p>
+  </footer>
+</main>
+<div class="live-bar" id="live-bar" role="status" hidden>
+  <span><span id="live-label"></span> <b id="live-value"></b></span>
+  <a href="#bars-card">Charts &darr;</a>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js" integrity="sha512-CQBWl4fJHWbryGE+Pc7UAxWMUMNMWzWxF4SQo9CgkJIN1kx6djDQZjh3Y8SZ1d+6I+1zze6Z7kHXO7q3UyZAWw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script src="calc.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

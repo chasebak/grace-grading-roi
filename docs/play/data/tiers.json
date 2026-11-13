@@ -1,0 +1,309 @@
+{
+ "as_of": "2026-11-12",
+ "companies": [
+  {
+   "as_of": "2026-11-12",
+   "cap_flag_text": "over this level's max insured value \u2014 PSA would move it up a level",
+   "cap_label": "max insured value",
+   "cap_rule": "moves_up",
+   "editable": false,
+   "fee_timing_default": "after_grading",
+   "fee_timing_source": "author's own PSA orders (orders wait at an accounting step after grading); not from a PSA page",
+   "key": "psa",
+   "name": "PSA",
+   "note": "The clock starts when the order is received and scanned in.",
+   "source_quotes": [
+    "Estimated Turnaround Times are estimates only and not guaranteed"
+   ],
+   "source_url": "https://www.psacard.com/services/tradingcardgrading",
+   "tiers": [
+    {
+     "days_max": 100,
+     "days_min": 90,
+     "fee": 39.99,
+     "max_value": 500,
+     "min_cards": null,
+     "name": "Value"
+    },
+    {
+     "days_max": 80,
+     "days_min": 70,
+     "fee": 59.99,
+     "max_value": 1000,
+     "min_cards": null,
+     "name": "Standard"
+    },
+    {
+     "days_max": 60,
+     "days_min": 50,
+     "fee": 79.99,
+     "max_value": 1500,
+     "min_cards": null,
+     "name": "Priority"
+    },
+    {
+     "days_max": 30,
+     "days_min": 20,
+     "fee": 199.0,
+     "max_value": 2500,
+     "min_cards": null,
+     "name": "Express"
+    },
+    {
+     "days_max": 15,
+     "days_min": 10,
+     "fee": 349.0,
+     "max_value": 5000,
+     "min_cards": null,
+     "name": "Super Express"
+    },
+    {
+     "days_max": 10,
+     "days_min": 7,
+     "fee": 599.0,
+     "max_value": 10000,
+     "min_cards": null,
+     "name": "Premier"
+    }
+   ],
+   "verified": true
+  },
+  {
+   "as_of": "2026-11-12",
+   "cap_flag_text": "above the protection amount",
+   "cap_label": "protection per card",
+   "cap_rule": "informational",
+   "editable": false,
+   "fee_timing_default": "at_checkout",
+   "fee_timing_source": "TAG's order flow is a store checkout (help.taggrading.com)",
+   "key": "tag",
+   "name": "TAG",
+   "note": "Protection covers each card up to the amount shown.",
+   "source_quotes": [
+    "Turnaround times are estimates in business days from intake and are not guaranteed",
+    "No value upcharges"
+   ],
+   "source_url": "https://taggrading.com/pages/pricing",
+   "tiers": [
+    {
+     "days_max": 90,
+     "days_min": 90,
+     "fee": 29.95,
+     "max_value": 250,
+     "min_cards": 10,
+     "name": "Value"
+    },
+    {
+     "days_max": 60,
+     "days_min": 60,
+     "fee": 39.95,
+     "max_value": 500,
+     "min_cards": 5,
+     "name": "Base"
+    },
+    {
+     "days_max": 45,
+     "days_min": 45,
+     "fee": 59.95,
+     "max_value": 1000,
+     "min_cards": null,
+     "name": "Standard"
+    },
+    {
+     "days_max": 30,
+     "days_min": 30,
+     "fee": 79.95,
+     "max_value": 1500,
+     "min_cards": null,
+     "name": "Priority"
+    },
+    {
+     "days_max": 10,
+     "days_min": 10,
+     "fee": 149.95,
+     "max_value": 2500,
+     "min_cards": null,
+     "name": "Express"
+    },
+    {
+     "days_max": 5,
+     "days_min": 3,
+     "fee": 299.95,
+     "max_value": 5000,
+     "min_cards": null,
+     "name": "Premier"
+    }
+   ],
+   "verified": true
+  },
+  {
+   "as_of": null,
+   "cap_flag_text": "above the max value you entered",
+   "cap_label": "max value (your entry)",
+   "cap_rule": "informational",
+   "editable": true,
+   "fee_timing_default": "at_checkout",
+   "fee_timing_source": "unverified \u2014 set it",
+   "key": "bgs",
+   "name": "BGS",
+   "note": "BGS prices were not read from beckett.com \u2014 enter the current ones from https://www.beckett.com/grading/pricing",
+   "source_quotes": [],
+   "source_url": "https://www.beckett.com/grading/pricing",
+   "tiers": [
+    {
+     "days_max": null,
+     "days_min": null,
+     "fee": null,
+     "max_value": null,
+     "min_cards": null,
+     "name": ""
+    },
+    {
+     "days_max": null,
+     "days_min": null,
+     "fee": null,
+     "max_value": null,
+     "min_cards": null,
+     "name": ""
+    },
+    {
+     "days_max": null,
+     "days_min": null,
+     "fee": null,
+     "max_value": null,
+     "min_cards": null,
+     "name": ""
+    },
+    {
+     "days_max": null,
+     "days_min": null,
+     "fee": null,
+     "max_value": null,
+     "min_cards": null,
+     "name": ""
+    }
+   ],
+   "verified": false
+  }
+ ],
+ "defaults": {
+  "companies": {
+   "bgs": {
+    "fee_timing": "at_checkout",
+    "p_second_pct": 35.0,
+    "p_top_pct": 50.0,
+    "price_lower": 250.0,
+    "price_second": 500.0,
+    "price_top": 1500.0
+   },
+   "psa": {
+    "fee_timing": "after_grading",
+    "p_second_pct": 35.0,
+    "p_top_pct": 50.0,
+    "price_lower": 250.0,
+    "price_second": 500.0,
+    "price_top": 1500.0
+   },
+   "tag": {
+    "fee_timing": "at_checkout",
+    "p_second_pct": 35.0,
+    "p_top_pct": 50.0,
+    "price_lower": 250.0,
+    "price_second": 500.0,
+    "price_top": 1500.0
+   }
+  },
+  "days_back": 5,
+  "days_out": 5,
+  "quantity": 1,
+  "range_mode": "midpoint",
+  "raw_value_now": 250.0,
+  "sell_days": 45,
+  "sell_fee_pct": 13.0,
+  "ship_back_batch": 20.0,
+  "ship_out_batch": 15.0,
+  "ship_to_buyer": 5.0,
+  "weekly_rate_pct": 6.0
+ },
+ "example_label": "example \u2014 enter your own comps per company",
+ "fee_timing_labels": {
+  "after_grading": "after grading",
+  "at_checkout": "up front (day 0)"
+ },
+ "fee_timings": [
+  "at_checkout",
+  "after_grading"
+ ],
+ "flag_text": {
+  "below_minimum": "batch is below this level's minimum of {minimum} cards"
+ },
+ "flow_labels": {
+  "grading_fee": "grading fee",
+  "sale": "expected net sale",
+  "ship_back": "return shipping",
+  "ship_out": "ship the card to the grader"
+ },
+ "footer": "This page computes in your browser. Its formulas live in calc.js, and a test runs them against this repo's tested Python on 17 committed fixture input sets.",
+ "generated_by": "python -m grace.play build",
+ "illustrative_label": "illustrative \u2014 enter your own",
+ "parity": {
+  "fixtures": 17,
+  "relative_tolerance": 1e-09,
+  "significant_digits": 10
+ },
+ "presets": [
+  {
+   "label": "another project at 6% a week",
+   "weekly_rate_pct": 6.0
+  },
+  {
+   "label": "stock market, 12% a year",
+   "weekly_rate_pct": 0.2181774408
+  }
+ ],
+ "provenance": "Service prices and estimated turnaround times were read from the official PSA and TAG pages on 2026-11-12; they change without notice",
+ "provenance_labels": {
+  "computed": "computed in your browser from your inputs \u00b7 formulas tested against the Python",
+  "example": "example \u2014 enter your own comps per company",
+  "illustrative": "illustrative \u2014 enter your own",
+  "inputs": "every field is yours to change \u00b7 nothing you type leaves this page"
+ },
+ "range_mode_labels": {
+  "fastest": "fastest end",
+  "midpoint": "midpoint",
+  "slowest": "slowest end"
+ },
+ "range_modes": [
+  "fastest",
+  "midpoint",
+  "slowest"
+ ],
+ "rate_grid": {
+  "max_pct": 10.0,
+  "min_pct": 0.0,
+  "step_pct": 0.25
+ },
+ "title": "Grading Play Calculator",
+ "why": {
+  "cash_flows": {
+   "kind": "Modelled: each dated payment and payout of one level with its sticker amount and its present value at your weekly rate.",
+   "lie": "the company charges at a different step than the setting says; the PSA default comes from the author's own orders, not a PSA page (guard: test_fee_paid_later_is_worth_less_today in tests/test_play.py).",
+   "question": "When does each dollar leave and come back, and what is it worth today?"
+  },
+  "play_bars": {
+   "kind": "Modelled: your odds and prices, the published fee and estimated turnaround, and every payment and payout discounted from the day it happens at your weekly opportunity rate. Zero is selling raw today.",
+   "lie": "the odds or the sale prices are wrong (they are your inputs), or the grader runs slower than its estimate; a browser formula that drifted from the Python would also lie (guard: tests/test_play_parity.py).",
+   "question": "Which company and service level leaves me with the most money in today's dollars, and does any of them beat selling the card raw today?"
+  },
+  "rate_lines": {
+   "kind": "Modelled: the same value of the play, recomputed at every weekly rate from 0% to 10% in 0.25% steps. Where two lines cross, the better level changes.",
+   "lie": "A crossing between two grid steps is only located to the nearest step, and one flat rate stands in for a project that may not always be available (guard: test_rate_grid_matches_single_evaluations in tests/test_play.py).",
+   "question": "How good does my other use of the money have to be before a faster, dearer level wins, or before selling raw today wins?"
+  },
+  "results_table": {
+   "kind": "Modelled per card: the present value of the costs and of the expected sale, and their difference against selling raw today. A level you cannot use (the batch is below its minimum, or the card is over PSA's max insured value) stays in the table and leaves the charts and the ranking. A level that is only above TAG's protection amount (or a BGS max value you typed) stays in the table, the charts and the ranking, with its note.",
+   "lie": "A level dropped without a flag would hide a choice (guards: test_flags_fire_exactly_at_the_boundaries, test_empty_bgs_rows_never_appear in tests/test_play.py).",
+   "question": "What is every level's fee, timing and value, including the ones I cannot use?"
+  }
+ }
+}
