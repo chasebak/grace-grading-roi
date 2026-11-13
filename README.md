@@ -22,11 +22,11 @@ python -m grace.report --check   # every README number equals a fresh run
 python -m grace.viz build --check   # the page's data equal a fresh backtest run
 ```
 
-**Try it:** *Hand GRACE a Budget* in [`docs/`](docs/index.html). Drag a cash
-budget and watch GRACE, the heuristic, random liquid cards and the oracle
-refill their batches, with planted-error cards in red. Serve it locally with
-`python -m http.server -d docs` and open the printed address; the page is
-not hosted yet.
+**Try it:** *Hand GRACE a Budget* at <https://chasebak.github.io/grace-grading-roi/>.
+Drag a cash budget and watch GRACE, the heuristic, random liquid cards and the
+oracle refill their batches, with planted-error cards in red. The page's files
+are in [`docs/`](docs/index.html); to serve them locally, run
+`python -m http.server -d docs` and open the printed address.
 
 Supported platforms: macOS arm64 and Linux. The demo reads the committed
 synthetic data in `synth/`, writes a frontier plot and a top-N table to the
