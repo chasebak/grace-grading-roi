@@ -18,6 +18,9 @@ class Tier:
 # Service levels and fees from PSA's public published fee schedule
 # (https://www.psacard.com/pricing), with rough public turnaround
 # estimates converted to months. All of this is configuration, not data.
+# These batch-engine tiers are an earlier, illustrative reading, kept fixed
+# so the synthetic study's numbers reproduce; the dated 2026-11-12 PSA table
+# lives in the Grading Play Calculator (grace/play.py).
 DEFAULT_TIERS = (
     Tier("regular", 79.99, 1.2),
     Tier("express", 149.0, 0.7),

@@ -20,13 +20,15 @@ python -m pytest -q
 python -m grace.demo
 python -m grace.report --check   # every README number equals a fresh run
 python -m grace.viz build --check   # the page's data equal a fresh backtest run
+python -m grace.play build --check   # the calculator's data and fixtures equal a fresh build
 ```
 
 **Try it:** *Hand GRACE a Budget* at <https://chasebak.github.io/grace-grading-roi/>.
 Drag a cash budget and watch GRACE, the heuristic, random liquid cards and the
 oracle refill their batches, with planted-error cards in red. The page's files
 are in [`docs/`](docs/index.html); to serve them locally, run
-`python -m http.server -d docs` and open the printed address.
+`python -m http.server -d docs` and open the printed address. One card
+instead of a batch? See the [Grading Play Calculator](#grading-play-calculator).
 
 Supported platforms: macOS arm64 and Linux. The demo reads the committed
 synthetic data in `synth/`, writes a frontier plot and a top-N table to the
@@ -91,8 +93,11 @@ Defaults (all configuration in `grace/config.py`): sale time 1.5 months,
 annual discount rate 0.12, sell fee 13%, ship/pack $5. Tiers come from
 PSA's [public published fee schedule](https://www.psacard.com/pricing)
 (e.g. Regular $79.99 / ~1.2 mo, Express $149 / ~0.7 mo, Super Express
-$299 / ~0.35 mo, Walk-Through $599 / ~0.25 mo). Tier choice is argmax NPV —
-a small decision tree under uncertainty. Annualized ROI
+$299 / ~0.35 mo, Walk-Through $599 / ~0.25 mo). These batch-engine tiers
+are an earlier, illustrative reading of PSA's levels, kept fixed so the
+synthetic study's numbers reproduce; the dated 2026-11-12 PSA table lives
+in the [Grading Play Calculator](#grading-play-calculator). Tier choice
+is argmax NPV — a small decision tree under uncertainty. Annualized ROI
 `((Q*qty*U)/R)^(12/T) - 1` is computed but display-capped: a hover-style
 metric, never the ranking. Marginal NPV versus selling raw today is
 `npv + (raw - max(raw*(1-f) - s, 0))`.
@@ -437,6 +442,36 @@ on frontier:     11
 ```
 <!-- grace.report:end demo_output -->
 
+## Grading Play Calculator
+
+A second page, for one card instead of a batch:
+<https://chasebak.github.io/grace-grading-roi/play/> (files in
+[`docs/play/`](docs/play/index.html); locally it is `/play/` on the same
+`python -m http.server -d docs`). It answers: I have this card. Which
+grading company and service level is the best play, or should I sell it
+raw today? It lists every PSA and TAG service level (BGS rows stay empty
+until you type its prices in), and charts the value of each play against
+selling raw today at your own odds, sale prices, shipping times, sell time
+and weekly opportunity rate. Hover a bar or a line for the dollar
+difference between levels.
+
+The timing idea: every payment and payout is valued at the day it actually
+happens, so a fee charged after grading costs less in today's dollars than
+the same fee charged at checkout, and a sale that lands months later is
+worth less than its sticker price. The discount rate is whatever else the
+same money could earn per week, which is why a fast, expensive level can
+beat a slow, cheap one once that rate is high enough; the second chart
+draws where the lines cross.
+
+Unlike the first page, this one computes in the browser. The engine is
+`grace/play.py`; `docs/play/calc.js` mirrors it, and
+`tests/test_play_parity.py` runs `calc.js` under node on the committed
+fixtures and compares every number with the Python (skipped with a printed
+reason if node is not installed; CI installs it). Service prices and
+estimated turnaround times were read from the official PSA and TAG pages
+on 2026-11-12; they change without notice. Why the page is built this way
+is in [DECISIONS.md](DECISIONS.md).
+
 ## Design decisions / what didn't work
 
 - **A flat multiplier cap didn't work.** An earlier production rule capped
@@ -496,6 +531,13 @@ on frontier:     11
   world, so how much they would move under another generator seed is to
   measure. The page computes nothing; it looks up and formats `docs/data/`,
   which `python -m grace.viz build` writes from the Experiment 4 functions.
+- **The Grading Play Calculator is arithmetic on your inputs.** Its odds
+  and sale prices are yours (the starting example is the same for every
+  company, with no price premium assumed for any of them); its turnaround
+  times are the companies' own published estimates, not guarantees; BGS
+  prices were not read and ship empty; and when each company charges its
+  fee is a setting (PSA's default comes from the author's own orders, not
+  from a PSA page).
 
 More math background (derivations, the method-of-moments estimator, decision-
 tree framing) lives in [MODEL.md](MODEL.md).

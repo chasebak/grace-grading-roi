@@ -5,7 +5,9 @@ alternative Z lost by N". Nulls and reversals stay in. Every measured
 number below is printed by `python -m grace.report` into
 `reports/numbers.json` (the page entries: by `python -m grace.viz build`
 into `docs/data/`); `tests/test_readme_drift.py` fails if this file
-quotes a number those commands no longer print.
+quotes a number those commands no longer print. The calculator entry's
+count comes from `python -m grace.play build` and is checked by
+`tests/test_play.py`.
 
 ## 2026-11-04 — Synthetic generator knobs and the golden-data pin
 
@@ -236,3 +238,28 @@ stored digest with the fresh sweep's, and a control draws the figure from
 a changed sweep and must be reported stale. Alternative: compare the image
 bytes; it lost because PNG bytes move with the matplotlib version while
 the plotted numbers do not (a principle, not a measurement).
+
+## 2026-11-12 — The Grading Play Calculator computes in the browser, behind a parity test
+
+Decided the second page (`docs/play/`) runs its formulas in the browser,
+in `docs/play/calc.js`, because it is a calculator: the reader types their
+own card, odds, sale prices, shipping, sell time and weekly rate, and no
+precomputed grid covers inputs that all move at once. That breaks the
+first page's rule (the page computes nothing), so a guard replaces the
+rule: `grace/play.py` stays the source of truth, `calc.js` mirrors it one
+function for one function with no DOM access, and
+`tests/test_play_parity.py` runs `calc.js` under node on the fixtures that
+`python -m grace.play build` writes. Measurement: 17 fixture input sets
+agree to 1e-09 relative (`docs/play/data/parity.json`; the Python side is
+stored at 10 significant digits). Without node the test is skipped with a
+printed reason; CI installs node and sets `GRACE_REQUIRE_NODE=1`, which
+turns that skip into a failure. Alternative: precompute a grid of answers
+like the first page; it lost because the inputs are continuous (a
+principle, not a measurement). Alternative: compute only in JavaScript; it
+lost because the repo's tested engine is Python, and an untested second
+copy of the discounting would be free to drift. What the guard does not
+cover: agreement on the fixtures is not agreement on every input; the
+service tables are a dated reading (2026-11-12) of the official PSA and
+TAG pages; BGS ships as empty rows because its prices were not read; and
+"PSA charges after grading" is the author's own order history, not a PSA
+page, so it is an editable setting.
